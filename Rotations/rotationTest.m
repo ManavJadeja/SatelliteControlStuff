@@ -5,7 +5,7 @@ matlabrc; clc; close all;
 %%% SIMULATION INFORMATION
 % Defining time
 dt = 1/30;
-duration = 10;
+duration = 90*60;
 tspan = dt:dt:duration;
 L = length(tspan);
 
@@ -57,6 +57,7 @@ view(45,20)
 
 
 % Actual Animation
+
 for i = 1:L
     q_i = q(i, 1:4);
     rotmat = q2a(q_i);
@@ -66,3 +67,6 @@ for i = 1:L
     pause(1/30)
 end
 
+
+
+disp('Done')

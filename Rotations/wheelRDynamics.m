@@ -5,16 +5,16 @@ function [dX] = wheelRDynamics(t,X,I)
     
     % Thruster forces (time dependent) here
     % [M] = thrust(t, t_start, t_stop, force, distance, direction);
-    M1 = wheelR(t, 1, 2, 5, 1, [0, 0, 1]);       % Burn 1
-    M2 = wheelR(t, 3, 4, 5, 1, [0, 0, -1]);      % Burn 2
-    M3 = wheelR(t, 5, 6, 5, 1, [0, 0, -1]);      % Burn 3
-    M4 = wheelR(t, 7, 8, 5, 1, [0, 0, 1]);       % Burn 4
+    M1 = wheelR(t, 1, 2, 1, 1, [0, 0, 1]);       % Burn 1
+    M2 = wheelR(t, 3, 4, 1, 1, [0, 0, -1]);      % Burn 2
+    M3 = wheelR(t, 5, 6, 1, 1, [0, 0, -1]);      % Burn 3
+    M4 = wheelR(t, 7, 8, 1, 1, [0, 0, 1]);       % Burn 4
     
     % Sum of the moments (time dependent and preplanned here)
     M = M1+M2+M3+M4;
     
     % Euler rotation equations here
-    dw = I\(-1*cpm(w)*I*w) + M;
+    dw = I\(-1*cpm(w)*I*w + M);
     
     % Quaternion kinematics here
     Bq = zeros(4,3);
