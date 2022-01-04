@@ -48,6 +48,7 @@ cube = block(state0, qd, K, @dynRotCon, t, dt, vertices, faces, inertia, color);
 [t,q] = cube.simulate();
 cube.animate();
 
-
+% Show Data
+seeData
 
 disp('Done')
