@@ -6,18 +6,20 @@ classdef satelliteModel < handle
     
     properties
         time                % Time Span
+        dt                  % Time Step
+        
         stateI              % Initial State Vector
         stateS              % Simulated State
         
         powerSystem         % Power System (object)
         attitudeSystem      % Attitude Control System (object)
-        commandSystem       % Flight Software System (obj)
+        commandSystem       % Flight Software System (object)
         
         h                   % Handle
     end
     
     methods
-        function obj = satelliteModel(time, powerSystem, attitudeSystem, commandSystem)
+        function obj = satelliteModel(time, dt, powerSystem, attitudeSystem, commandSystem)
             %%% satelliteModel
             %       Create a satellite model
             
@@ -26,6 +28,7 @@ classdef satelliteModel < handle
             obj.commandSystem = commandSystem;
             
             obj.time = time;
+            obj.dt = dt;
             obj.stateI = [
                 attitudeSystem.stateI;
                 powerSystem.stateI;
@@ -34,17 +37,30 @@ classdef satelliteModel < handle
             obj.stateS = zeros(length(time), length(stateI));
         end
         
-        function [] = flightSoftware(obj)
-            %%% flightSoftware
-            %       A very primitive version of flight software
-            %       Exclusively for decision making, no management
+        function [] = satelliteSystemDynamics()
+            %%% satelliteSystemDynamics
+            %       Combines all subsystems dynamics into one function
             
-            if obj.powerSystem.battery
+            %%% NEED TO FEED IN FULL STATE VECTOR
+            %%% GENERATE COMMAND FROM CURRENT STATE VECTOR
+            %%% APPLY COMMAND TO ALL SUBSYSTEMS
+            %%% RETREIVE OUTPUT STATE VECTOR
+            %%% NEEDS TO BE IN A FORM THAT RK4 CAN USE
         end
         
         function [] = simulate(obj)
+            %%% simulate
+            %       Simulation for satellite model
+            
+            %%% FIRST STEP
+            obj.stateS(1,:) = obj.stateI;
+            
+            
+            %%% SIMULATION LOOP
             for a = 1:length(obj.time)-1
-                dt = obj.time(a+1) - obj.time(a);
+                t = obj.time(a);
+                
+                obj.stateS(a+1,:) = RK4(@obj.satelliteSystemDynamics, obj.dt, X, t);
                 
             end
         end

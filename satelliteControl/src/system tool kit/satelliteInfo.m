@@ -75,6 +75,7 @@ disp("Updated: Satellite Model")
 %%% SATELLITE SENSOR (OBJECT)
 sSensor = satellite.Children.New('eSensor', ssName);
 
+
 %%% SATELLITE SENSOR PROPERTIES
 sSensor.CommonTasks.SetPatternSimpleConic(ssCHA, 1);
 sSensor.CommonTasks.SetPointingAlongVector('Satellite/SPICESat Body.X', 'Satellite/SPICESat North', 0);

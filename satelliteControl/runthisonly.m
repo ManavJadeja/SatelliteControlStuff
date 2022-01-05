@@ -1,6 +1,8 @@
 %%% PRELIMINARY STUFF
+% ADDING TO PATH (TEMPORARY)
 addpath(genpath('lib'));
 addpath(genpath('src'));
+addpath(genpath('tmp'));
 
 
 %%% STK LAUNCH
@@ -49,7 +51,7 @@ obj  = attitudeSystem(time, stateI, I, K,...
 
 obj = commandSystem(socSafe, socUnsafe)
 
-obj = satelliteModel(time, powerSystem, attitudeSystem)
+obj = satelliteModel(time, dt, powerSystem, attitudeSystem, commandSystem)
 
 
 % POWER SYSTEM
