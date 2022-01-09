@@ -43,16 +43,18 @@ t = 1:length(timeVector);
 
 %%% SATELLITE MODEL
 % CREATE MODEL (MATLAB)
-satelliteModel = createSatelliteModel(root, scenario, satellite, access, timeVector, dt);
+satelliteModel = createSatelliteModel(root, scenario, satellite, facility, access, timeVector, dt);
+disp('Created: Satellite Object in MATLAB')
 
 % SIMULATE SYSTEM DYNAMICS
+disp('Simuating: Satellite System Dynamics')
 satelliteModel.simulate();
+disp('Simulation: Complete')
 
 % CREATE ATTITUDE FILE
 afQ(scenario, timeVector, satelliteModel.stateS(:,1:4));
 
 % LOAD ATTITUDE FILE
-toAttitudeFile = 'tmp\attitudeQ.a';
+toAttitudeFile = [pwd, '\tmp\attitudeQ.a'];
 satellite.Attitude.External.Load(toAttitudeFile);
-
 
