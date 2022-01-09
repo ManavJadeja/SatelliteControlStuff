@@ -10,29 +10,26 @@ classdef powerSystem < handle
         
         battery             % Battery (object)
         solarArray          % Solar Array (object)
-        
-        sunVector           % Sun Vector
-        lightingTimes       % Lighting Times
-        
+                
         h                   % Handle
     end
     
     methods
-        function obj = powerSystem(time, battery, solarArray, sunVector)
+        function obj = powerSystem(time, battery, solarArray)
             %%% powerSystem
             %       Create a power system
             
             obj.time = time;
             obj.battery = battery;
             obj.solarArray = solarArray;
-            obj.sunVector = sunVector;
+            obj.stateI = obj.battery.soc;
         end
         
-        function [dX] = powerSystemDynamics(dt, X, obj)
+        function [dX] = powerSystemDynamics(obj, dt, X)
             %%% powerSystemDynamics
             %       Power System Dynamics
             
-            % NEED TO SIT DOWN WITH SUNNY AND FIGURE THIS OUT >:0
+            dX = zeros(1,X);
         end
         
     end

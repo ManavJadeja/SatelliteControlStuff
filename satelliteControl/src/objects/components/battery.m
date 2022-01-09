@@ -1,6 +1,6 @@
 classdef battery < handle
     %%% battery
-    %       Battery object
+    %       Battery Object
     %
     %   Created by Manav Jadeja on 20220102
     

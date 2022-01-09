@@ -30,16 +30,21 @@ classdef satelliteModel < handle
             obj.time = time;
             obj.dt = dt;
             obj.stateI = [
-                attitudeSystem.stateI;
-                powerSystem.stateI;
+                attitudeSystem.stateI,...
+                powerSystem.stateI,...
             ];
             
-            obj.stateS = zeros(length(time), length(stateI));
+            obj.stateS = zeros(length(time), length(obj.stateI));
         end
         
-        function [] = satelliteSystemDynamics()
+        function [dState] = satelliteSystemDynamics(obj, dt, state, a, command)
             %%% satelliteSystemDynamics
             %       Combines all subsystems dynamics into one function
+            % attitudeSystemDynamics(dt, X, qd, obj)
+            % command = obj.commandSystem.command(t, obj.commandSystem, obj.powerSystem);
+            
+            dState = zeros(1,length(obj.stateI));
+            dState(1:7) = attitudeSystemDynamics(dt, state(1:7), obj.attitudeSystem.qd(a, :, command), obj.attitudeSystem);
             
             %%% NEED TO FEED IN FULL STATE VECTOR
             %%% GENERATE COMMAND FROM CURRENT STATE VECTOR
@@ -58,10 +63,8 @@ classdef satelliteModel < handle
             
             %%% SIMULATION LOOP
             for a = 1:length(obj.time)-1
-                t = obj.time(a);
-                
-                obj.stateS(a+1,:) = RK4(@obj.satelliteSystemDynamics, obj.dt, X, t);
-                
+                command = obj.commandSystem.command(obj.powerSystem, a);
+                obj.stateS(a+1,:) = RK4(@obj.satelliteSystemDynamics, obj.dt, obj.stateS(a,:), a, command);
             end
         end
         

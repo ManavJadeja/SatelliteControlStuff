@@ -1,13 +1,13 @@
-function [] = afQ(quaternion, timeVector, scenarioStartTime)
+function [] = afQ(scenario, timeVector, quaternion)
 %%% afQ
 %       Creates a quaternion attitude file from given information
 %
 %   INPUTS:
-%       quaternion              Quaternion Data (double: n x 4 matrix)
-%                                   Format: <qs, qx, qy, qz>
+%       scenario                Scenario (object)
 %       timeVector              Time Vector (datetime: n x 1 vector)
 %                                   Format: 'dd MMM yyyy HH:mm:ss.S'
-%       scenarioStartTime       Scenario Start Time
+%       quaternion              Quaternion Data (double: n x 4 matrix)
+%                                   Format: <qs, qx, qy, qz>
 %
 %   OUTPUTS:
 %       attitudeQ.a             Quaternion Attitude File in ECF Frame
@@ -16,7 +16,7 @@ function [] = afQ(quaternion, timeVector, scenarioStartTime)
 
 %%% OPEN FILE
 count = length(timeVector);
-fid = fopen('..\..\tmp\attitudeQ.a', 'wt');
+fid = fopen('tmp\attitudeQ.a', 'wt');
 
 
 %%% PRELIMINARY INFORMATION
@@ -24,7 +24,7 @@ fid = fopen('..\..\tmp\attitudeQ.a', 'wt');
 fprintf(fid, 'stk.v.12.2\n');
 fprintf(fid, 'BEGIN Attitude\n');
 fprintf(fid, 'NumberOfAttitudePoints %f\n', count);
-fprintf(fid, 'ScenarioEpoch %s\n', scenarioStartTime);
+fprintf(fid, 'ScenarioEpoch %s\n', scenario.StartTime);
 fprintf(fid, 'BlockingFactor 20\n');
 fprintf(fid, 'InterpolationOrder 0\n');
 fprintf(fid, 'CentralBody Earth\n');

@@ -1,27 +1,56 @@
-disp('start')
+disp('START')
 
-%%% DEFINE PARAMETERS
-% Time
-t = 0:0.001:5;
-tStep = 0.5;
-% Position
-x0 = 0;
+%%% SIMULATION PARAMETERS
+% TIME STUFF
+dt = 0.1;
+t = 0:dt:25;
 
-%%% CONTROL STUFF
-% Desired Position
-xDesired = unitStep(t, tStep);
-% Controller
-xActual1 = controller(t, x0, xDesired, 1, 0, 0);
-xActual2 = controller(t, x0, xDesired, 1, 1, 0);
-xActual3 = controller(t, x0, xDesired, 1, 1, 1);
+% INITIAL CONDITIONS
+e0 = [0,0,0];
+q0 = e2q(e0);
+w0 = [0,0,0];
+state0 = [q0,w0];
+% DESIRED PATH
+ed = [
+    (pi/2).*unitStep(t,5);
+    (pi/2).*unitStep(t,10);
+    (pi/2).*unitStep(t,15);
+]';
+qd = e2q(ed);
 
-%%% OUTPUT
-plot(t, xDesired)
-hold on
-plot(t, xActual1)
-plot(t, xActual2)
-plot(t, xActual3)
-
+% CONTROL GAINS
+K = [1,1];
 
 
-disp('done')
+%%% CREATE CUBE
+% Block properties
+vertices = [
+    -1 -1  -1;
+    -1  1 -1;
+    1   1  -1;
+    1  -1  -1;
+    -1 -1  1;
+    -1  1 1;
+    1   1  1;
+    1  -1  1
+];                      % I copied this
+faces = [
+    1 2 6 5;
+    2 3 7 6;
+    3 4 8 7;
+    4 1 5 8;
+    1 2 3 4;
+    5 6 7 8
+];                      % I copied this
+color = [0 0.5 0];     % Green
+
+inertia = diag([1 1 1]);
+
+cube = block(state0, qd, K, @dynRotCon, t, dt, vertices, faces, inertia, color);
+[t,q1] = cube.simulate1();
+q2 = cube.simulate2();
+
+animate(q1, cube)
+animate(q2', cube)
+
+disp('DONE')
