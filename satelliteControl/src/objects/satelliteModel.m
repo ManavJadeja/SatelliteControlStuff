@@ -65,6 +65,7 @@ classdef satelliteModel < handle
             for a = 1:length(obj.time)-1
                 command = obj.commandSystem.command(obj.powerSystem, a);
                 obj.stateS(a+1,:) = RK4(@obj.satelliteSystemDynamics, obj.dt, obj.stateS(a,:), a, command);
+                obj.stateS(a+1,8) = obj.powerSystem.step(obj.dt, command);
             end
         end
         

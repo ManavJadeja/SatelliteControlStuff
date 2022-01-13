@@ -23,6 +23,7 @@ obj = satelliteModel(time, dt, powerSystem, attitudeSystem, commandSystem)
 addpath(genpath('../../lib'));
 addpath(genpath('../../src'));
 addpath(genpath('../../tmp'));
+addpath(genpath('../../res'));
 
 % TIME
 time = 0:dt:dt*(length(timeVector)-1);
@@ -44,9 +45,12 @@ qd(:,:,3) = accessQuaternions;              % 3: Communication Mode
 
 %%% CREATING OBJECTS
 % POWER SYSTEM
-BATTERY = battery(1, 1, 1, 1, 1, 1, 1, 1);
+batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
+
+BATTERY = battery(1000, 0.70, 0.01, 0.01, 33.6, 40, 8, 0);
+BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(1, [0,0,-1], 1);
-POWERSYSTEM = powerSystem(time, BATTERY, SOLARARRAY);
+POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY);
 
 % COMMAND SYSTEM
 COMMANDSYSTEM = commandSystem(0.9, 0.8, accessBools, sunBools);
