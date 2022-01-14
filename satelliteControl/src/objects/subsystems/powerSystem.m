@@ -34,12 +34,12 @@ classdef powerSystem < handle
             obj.battery = battery;
             obj.chargingVoltage = transpose([batteryData.battChgRows.cV]);
             obj.chargingSoc = transpose([batteryData.battChgRows.cSOC]);
-            obj.dischargingVoltage = transpose([batteryData.battChgRows.dV]);
-            obj.dischargingSoc = transpose([batteryData.battChgRows.dSOC]);
+            obj.dischargingVoltage = transpose([batteryData.battDchgRows.dV]);
+            obj.dischargingSoc = transpose([batteryData.battDchgRows.dSOC]);
             obj.solarArray = solarArray;
             obj.stateI = obj.battery.soc;
 
-            obj.batteryVoltage = obj.chargingVoltage(binarySearch(obj.stateI));
+            obj.batteryVoltage = obj.chargingVoltage(binarySearch(obj.chargingSoc, obj.stateI));
         end
 
         function [soc] = step(obj, dt, command)
@@ -47,7 +47,7 @@ classdef powerSystem < handle
 
             % Compute current produced by solar array
             solarArrayCurrent = 0;
-            action = command.command(obj, dt);
+            action = command;
             if action == 2 % charging mode
                 solarArrayCurrent = obj.SimpleSolarValue / obj.batteryVoltage;
             end
@@ -66,11 +66,11 @@ classdef powerSystem < handle
             % Compute change in the charge of the battery
             ahrChange = batteryCurrent * dt / 60 / 60;
             % Return the new SOC, clamped between 0 and 1
-            soc = min(1, max(0, obj.battery.stateI + ahrChange / obj.battery.capacity));
+            soc = min(1, max(0, obj.stateI + ahrChange / obj.battery.capacity));
 
             %%% Voltage data 
             if batteryCurrent > 0
-                voltageCharge = obj.chargingVoltage(binarySearch(obj.stateI));
+                voltageCharge = obj.chargingVoltage(binarySearch(obj.chargingSoc, obj.stateI));
 
                 batteryCurrent = min(batteryCurrent, obj.battery.maxI);
 
@@ -79,7 +79,7 @@ classdef powerSystem < handle
                 obj.batteryVoltage =  min(obj.batteryVoltage, obj.battery.maxV);
 
             else
-                voltageDischarge = obj.dischargingVoltage(binarySearch(obj.stateI));
+                voltageDischarge = obj.dischargingVoltage(binarySearch(obj.dischargingSoc, obj.stateI));
 
                 obj.batteryVoltage = voltageDischarge + obj.battery.R_discharge * batteryCurrent;
 
