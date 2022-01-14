@@ -61,7 +61,7 @@ classdef commandSystem < handle
                 if accessBool
                     command = 3;
                 else
-                    if socSafeBool
+                    if ~socSafeBool
                         if sunBool
                             command = 2;
                         else
