@@ -1,4 +1,4 @@
-function [SATELLITEMODEL] = createSatelliteModel(root, scenario, satellite, facility, access, timeVector, dt)
+function [SATELLITEMODEL] = createSatelliteModel(root, scenario, satellite, facilityArray, accessArray, timeVector, dt)
 %%%
 %{
 POWER SYSTEM
@@ -7,7 +7,7 @@ obj = solarArray(area, normalVector, efficiency)
 obj = powerSystem(time, battery, solarArray, sunVector)
 
 COMMAND SYSTEM
-obj = commandSystem(socSafe, socUnsafe, accessBools, sunBools)
+obj = commandSystem(socSafe, socUnsafe, sunBools, accessBools)
 
 ATTITUDE SYSTEM
 obj = magnetorquer(dipoleMagnitude, direction, magneticField)
@@ -30,7 +30,12 @@ time = 0:dt:dt*(length(timeVector)-1);
 t = 1:length(timeVector);
 
 % BOOLS AND QUATERNIONS
-[accessBools, accessQuaternions] = getAccessQuaternions(root, scenario, satellite, facility, access, timeVector, dt);
+accessQuaternions = zeros(length(t), 4, length(facilityArray));
+accessBools = false(length(t), length(facilityArray));
+for a = 1:length(facilityArray)
+    [accessBools(:, a), accessQuaternions(:, :, a)] = getAccessQuaternions(root, scenario, satellite, facilityArray(a), accessArray(a), timeVector, dt);
+end
+
 [sunBools, sunQuaternions] = getSunQuaternions(root, scenario, satellite, timeVector, dt);
 
 % MAGNETIC FIELD
@@ -39,10 +44,18 @@ satBField = getMagneticField(scenario, satellite, dt);
 
 %%% COMPONENTS AND SUBSYSTEMS
 % Command System
-qd = zeros(length(timeVector), 4, 5);       % 0: Safety Mode % 1: Nothing Mode % 4: Experiment Mode
-qd(:,:,2) = sunQuaternions;                 % 2: Charging Mode
-qd(:,:,3) = accessQuaternions;              % 3: Communication Mode
-
+    % 1: Nothing Mode
+    % 2: Safety Mode
+    % 3: Experiment Mode
+    % 4: Charging Mode
+    % 5: Access Location 1
+    % 6: Access Location 2
+    % n+4: Access Location n
+qd = zeros(length(timeVector), 4, 4+length(facilityArray));
+qd(:,:,4) = sunQuaternions;                 % 4: Charging Mode
+for a = 1:length(facilityArray)
+    qd(:,:,a+4) = accessQuaternions(:,:,a);
+end
 %%% CREATING OBJECTS
 % POWER SYSTEM
 batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
@@ -53,7 +66,7 @@ SOLARARRAY = solarArray(1, [0,0,-1], 1);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY);
 
 % COMMAND SYSTEM
-COMMANDSYSTEM = commandSystem(0.9, 0.8, accessBools, sunBools);
+COMMANDSYSTEM = commandSystem(0.6, 0.5, sunBools, accessBools);
 
 % ATTITUDE SYSTEM
 MAGNETORQUER = magnetorquer(0.2, [1,0,0], satBField);

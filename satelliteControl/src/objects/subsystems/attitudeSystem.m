@@ -15,11 +15,12 @@ classdef attitudeSystem < handle
         magnetorquer        % Magnetorquer (3x1 Dipole Moment)
         
         qd                  % Desired Attitude Quaternions
-                                % 0: Safety Mode
                                 % 1: Nothing Mode
-                                % 2: Charging Mode
-                                % 3: Communication Mode
-                                % 4: Experiment Mode
+                                % 2: Safety Mode
+                                % 3: Experiment Mode
+                                % 4: Charging Mode
+                                % 5: Access Location 1
+                                % 6: Access Location 2
         
         h                   % Handle
     end

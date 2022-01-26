@@ -1,6 +1,7 @@
 %%% PRELIMINARY STUFF
 % ADDING TO PATH (TEMPORARY)
 addpath(genpath('lib'));
+addpath(genpath('res'));
 addpath(genpath('src'));
 addpath(genpath('tmp'));
 
@@ -14,25 +15,48 @@ disp("Started: STK")
 
 
 %%% STK SETUP
+%{
+[scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime, scenStopTime, dt);
+[facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax)
+%}
 % SCENARIO
-[scenario, timeVector, dt] = scenarioInfo(root);
+[scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
+    '24 Dec 2021 01:30:00.000', '24 Dec 2021 04:00:00.000', 0.1);
 
 % FACILITY AND FACILITY SENSOR
-[facility, fSensor] = facilityInfo(root);
+[facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [0 255 255],...
+    'rugsSensor', 90, 0, 1500);
+[facility2, fSensor2] = facilityInfo(root, 'asugs', [33.4242 -111.9280 0], [255 255 0],...
+    'asugsSensor', 90, 0, 2500);
+
+facilityArray = [facility1, facility2];
+fSensorArray = [fSensor1, fSensor2];
 
 % SATELLITE AND SATELLITE SENSOR
-[satellite, sSensor] = satelliteInfo(root);
+[satellite, sSensor] = satelliteInfo(root, 'SPICESat', 6371+350, 0, 45, 0, 0, 0,...
+    [255 0 0], 'C:\Program Files\AGI\STK 12\STKData\VO\Models\Space\cubesat_3u.dae',...
+    'sSensor', 1, 0, 1500);
+
+% COMPUTE ACCESS
+for a = 1:length(facilityArray)
+    accessArray(a) = satellite.GetAccessToObject(fSensorArray(a));
+    accessArray(a).ComputeAccess();
+end
+%{
+% Location 1
+access1 = satellite.GetAccessToObject(fSensor1);
+access1.ComputeAccess();
+% Location 2
+access2 = satellite.GetAccessToObject(fSensor2);
+access2.ComputeAccess();
+
+accessArray = [access1, access2];
+%}
+
+disp('Computed: Access')
 
 % FINALIZE AND RESET ANIMATION PERIOD
 root.Rewind;
-
-
-%%% STK COMPUTATION
-% COMPUTE ACCESS (satellite > facility sensor)
-access = satellite.GetAccessToObject(fSensor);
-access.ComputeAccess();
-
-disp('Access Computed')
 
 
 %%% PRELIMINARY COMPUTATION
@@ -43,7 +67,7 @@ t = 1:length(timeVector);
 
 %%% SATELLITE MODEL
 % CREATE MODEL (MATLAB)
-satelliteModel = createSatelliteModel(root, scenario, satellite, facility, access, timeVector, dt);
+satelliteModel = createSatelliteModel(root, scenario, satellite, facilityArray, accessArray, timeVector, dt);
 disp('Created: Satellite Object in MATLAB')
 
 % SIMULATE SYSTEM DYNAMICS
@@ -57,4 +81,5 @@ afQ(scenario, timeVector, satelliteModel.stateS(:,1:4));
 % LOAD ATTITUDE FILE
 toAttitudeFile = [pwd, '\tmp\attitudeQ.a'];
 satellite.Attitude.External.Load(toAttitudeFile);
+
 

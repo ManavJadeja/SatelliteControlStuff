@@ -1,4 +1,4 @@
-function [scenario, timeVector, dt] = scenarioInfo(root)
+function [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime, scenStopTime, dt)
 %%% SCENARIO INFORMATION
 %   Information for Scenario (object) in Systems Tool Kit
 %       1) Input Parameters
@@ -10,24 +10,16 @@ function [scenario, timeVector, dt] = scenarioInfo(root)
 %                                   % Format: 'dd MMM yyyy HH:mm:ss:SSS'
 %       scenStopTime            Scenario Stop Time (char array: date)
 %                                   % Format: 'dd MMM yyyy HH:mm:ss:SSS'
-%       interval                Time Step (double: seconds)
+%       dt                      Time Step (double: seconds)
 %
 %   Definitions
 %       scenStartTime           Analysis Start Time (datetime: date)
 %       scenStopTime            Analysis Stop Time (datetime: date)
-%       dt                      Time Step (duration: seconds)
+%       interval                Time Step (duration: seconds)
 %       timeVector              Time Vector (column list of datetimes)
 %       scenario                Scenario (object)
 %
 %   Created by Manav Jadeja on 20220101
-
-
-%%% PARAMETERS
-scenName = 'solid';
-scenStartTime = '24 Dec 2021 00:00:00.000';
-scenStopTime = '24 Dec 2021 02:00:00.000';
-% TIME STEP (FIXED)
-dt = 0.1;
 
 
 %%% DEFINITIONS

@@ -26,7 +26,9 @@ accessQuaternions = zeros(count,4);
 
 % DEFINE VECTORS
     % Need to use try because creating it twice throws an error
-%try
+arAngleName = [facility.InstanceName, 'accessRotationAngle'];
+arAxisName = [facility.InstanceName, 'accessRotationAxis'];
+try
     % Vector and Angle Factory
     vgtSat = satellite.Vgt;
     VectFactory = vgtSat.Vectors.Factory;
@@ -41,27 +43,29 @@ accessQuaternions = zeros(count,4);
     % Displacement Vector From Satellite to Facility
     pointSCenter = satellite.Vgt.Points.Item('Center');
     pointFCenter = facility.Vgt.Points.Item('Center');
-    satAccessVector = VectFactory.CreateDisplacementVector('Sat2Fac', pointSCenter, pointFCenter);
+    satAccessVector = VectFactory.CreateDisplacementVector(['sat2', facility.InstanceName], pointSCenter, pointFCenter);
     
     % Access Rotation Angle
-    accessAngle = AngFactory.Create('accessRotationAngle', 'Rotation Angle between Body X to Facility', 'eCrdnAngleTypeBetweenVectors');
+    accessAngle = AngFactory.Create(arAngleName, ['Rotation Angle between Body X to ', facility.InstanceName], 'eCrdnAngleTypeBetweenVectors');
     accessAngle.FromVector.SetVector(satAntenna);
     accessAngle.ToVector.SetVector(satAccessVector);
-    VectFactory.CreateCrossProductVector('accessRotationAxis', satAntenna, satAccessVector);
+    VectFactory.CreateCrossProductVector(arAxisName, satAntenna, satAccessVector);
     
     % Add Vector and Angle to Satellite
     vector = satellite.VO.Vector;
-    vectorARAxis = vector.RefCrdns.Add('eVectorElem', ['Satellite/', satellite.InstanceName, ' accessRotationAxis']);
-    angleARAngle = vector.RefCrdns.Add('eAngleElem', ['Satellite/', satellite.InstanceName, ' accessRotationAngle']);
+    vectorARAxis = vector.RefCrdns.Add('eVectorElem', ['Satellite/', satellite.InstanceName, ' ', arAxisName]);
+    angleARAngle = vector.RefCrdns.Add('eAngleElem', ['Satellite/', satellite.InstanceName, ' ', arAngleName]);
 
     % Make Access Rotation Angle Visible
+    vectorARAxis.Color = facility.Graphics.Color;
+    angleARAngle.Color = facility.Graphics.Color;
     vectorARAxis.Visible = true;
     angleARAngle.Visible = true;
     angleARAngle.LabelVisible = true;
     angleARAngle.AngleValueVisible = true;
-%catch
-    %disp('Access Rotation Axis and Angle already exist')
-%end
+catch
+    disp('Access Rotation Axis and Angle already exist')
+end
 
 
 %%% DATA PROVIDERS
@@ -71,8 +75,8 @@ accessStart = cell2mat(accessDP.DataSets.GetDataSetByName('Start Time').GetValue
 accessStop = cell2mat(accessDP.DataSets.GetDataSetByName('Stop Time').GetValues);
 
 % ACCESS ROTATION AXIS AND ANGLE
-accessRotationAxis = satellite.DataProviders.GetDataPrvTimeVarFromPath('Vectors(Fixed)/accessRotationAxis').Exec(scenario.StartTime, scenario.StopTime, dt);
-accessRotationAngle = satellite.DataProviders.GetDataPrvTimeVarFromPath('Angles/accessRotationAngle').Exec(scenario.StartTime, scenario.StopTime, dt);
+accessRotationAxis = satellite.DataProviders.GetDataPrvTimeVarFromPath(['Vectors(Fixed)/', arAxisName]).Exec(scenario.StartTime, scenario.StopTime, dt);
+accessRotationAngle = satellite.DataProviders.GetDataPrvTimeVarFromPath(['Angles/', arAngleName]).Exec(scenario.StartTime, scenario.StopTime, dt);
 
 
 %%% EXTRACT DATA

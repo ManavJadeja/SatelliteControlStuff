@@ -1,4 +1,4 @@
-function [satellite, sSensor] = satelliteInfo(root)
+function [satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sAN, sL, sColor, sModel, ssName, ssCHA, ssRmin, ssRmax)
 %%% SATELLITE INFORMATION
 %   Information for Satellite (object) in Systems Tool Kit
 %       1) Input Parameters
@@ -26,24 +26,6 @@ function [satellite, sSensor] = satelliteInfo(root)
 %
 
 
-%%% PARAMETERS
-% SATELLITE INFORMATION
-sName = 'SPICESat';
-sSMA = 6371+350;
-sE = 0;
-sI = 45;
-sAP = 0;
-sAN = 0;
-sL = 0;
-sModel = 'C:\Program Files\AGI\STK 12\STKData\VO\Models\Space\cubesat_3u.dae';
-
-% SATELLITE SENSOR INFORMATION
-ssName = 'sSensor';
-ssCHA = 1;
-ssRmin = 0;
-ssRmax = 1501;
-
-
 %%% DEFINITIONS
 % SATELLITE (OBJECT)
 satellite = root.CurrentScenario.Children.New('eSatellite', sName);
@@ -66,8 +48,16 @@ satellite.Propagator.Propagate;
 
 disp("Created: Satellite")
 
+% Satellite Graphics
 satellite.VO.Model.ModelData.Filename = sModel;
 satellite.Graphics.Resolution.Orbit = 60;
+
+% Satellite Color
+graphics = satellite.Graphics;
+graphics.SetAttributesType('eAttributesBasic');
+attributes = graphics.Attributes;
+attributes.Inherit = false;
+attributes.Color = rgb2StkColor(sColor);
 
 disp("Updated: Satellite Model")
 

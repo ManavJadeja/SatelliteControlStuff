@@ -43,7 +43,7 @@ classdef commandSystem < handle
             
             %%% CURRENT BOOLEANS
             socSafeBool = logical(powerSystem.battery.soc >= obj.socSafe);
-            socUnsafeBool = logical(powerSystem.battery.soc <= obj.socUnsafe);
+            socUnsafeBool = logical(powerSystem.battery.soc >= obj.socUnsafe);
             sunBoolT = obj.sunBools(t);
             accessBoolsT = obj.accessBools(t,:);
             

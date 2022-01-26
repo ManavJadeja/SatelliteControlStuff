@@ -1,4 +1,4 @@
-function [facility, fSensor] = facilityInfo(root)
+function [facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax)
 %%% FACILITY INFORMATION
 %   Information for Facility (object) in Systems Tool Kit
 %       1) Input Parameters
@@ -19,20 +19,6 @@ function [facility, fSensor] = facilityInfo(root)
 %       facility        Facility (object)
 %       fSensor         Facility Sensor (object)
 %
-
-
-%%% PARAMETERS
-% FACILITY INFORMATION
-fName = 'RUGS';
-fLocation = [40.5215 -74.4618 0.05];
-fColor = [255 255 255];
-
-% FACILITY SENSOR INFORMATION
-fsName = 'fsensor';
-fsCHA = 90;
-fsRmin = 0;
-fsRmax = 1500;
-% NOTE: Maybe try to add elevation angle constraint as well
 
 
 %%% DEFINITIONS

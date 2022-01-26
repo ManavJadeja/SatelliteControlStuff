@@ -52,6 +52,8 @@ try
     angleSRAngle = vector.RefCrdns.Add('eAngleElem', ['Satellite/',satellite.InstanceName, ' sunRotationAngle']);
 
     % Making Vector and Angle Visible
+    vectorSRAxis.Color = 65535;
+    angleSRAngle.Color = 65535;
     vectorSRAxis.Visible = true;
     angleSRAngle.Visible = true;
     angleSRAngle.LabelVisible = true;
