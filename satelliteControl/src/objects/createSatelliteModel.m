@@ -60,13 +60,13 @@ end
 % POWER SYSTEM
 batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
 
-BATTERY = battery(1000, 0.70, 0.01, 0.01, 33.6, 40, 8, 0);
+BATTERY = battery(1000, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(1, [0,0,-1], 1);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY);
 
 % COMMAND SYSTEM
-COMMANDSYSTEM = commandSystem(0.6, 0.5, sunBools, accessBools);
+COMMANDSYSTEM = commandSystem(1, 0.5, sunBools, accessBools);
 
 % ATTITUDE SYSTEM
 MAGNETORQUER = magnetorquer(0.2, [1,0,0], satBField);

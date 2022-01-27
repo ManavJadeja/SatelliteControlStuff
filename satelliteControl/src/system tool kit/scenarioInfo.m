@@ -37,6 +37,11 @@ scenario.SetTimePeriod(scenStartTime, scenStopTime)
 scenario.StartTime = scenStartTime;
 scenario.StopTime = scenStopTime;
 
+% SCENARIO FONTS
+scenario.VO.MediumFont.Name = 'Comic Sans MS';
+scenario.VO.MediumFont.PtSize = 16;
+scenario.VO.MediumFont.Bold = false;
+
 disp("Created: Scenario")
 
 

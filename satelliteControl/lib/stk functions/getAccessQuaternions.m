@@ -26,8 +26,8 @@ accessQuaternions = zeros(count,4);
 
 % DEFINE VECTORS
     % Need to use try because creating it twice throws an error
-arAngleName = [facility.InstanceName, 'accessRotationAngle'];
-arAxisName = [facility.InstanceName, 'accessRotationAxis'];
+arAngleName = [facility.InstanceName, 'AccessRotationAngle'];
+arAxisName = [facility.InstanceName, 'AccessRotationAxis'];
 try
     % Vector and Angle Factory
     vgtSat = satellite.Vgt;
@@ -57,6 +57,8 @@ try
     angleARAngle = vector.RefCrdns.Add('eAngleElem', ['Satellite/', satellite.InstanceName, ' ', arAngleName]);
 
     % Make Access Rotation Angle Visible
+    vector.VectorSizeScale = 0.2;
+    vector.AngleSizeScale = 0.5;
     vectorARAxis.Color = facility.Graphics.Color;
     angleARAngle.Color = facility.Graphics.Color;
     vectorARAxis.Visible = true;

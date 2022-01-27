@@ -78,6 +78,7 @@ ssRange.max = ssRmax;
 
 sSensor.Graphics.Projection.UseConstraints = true;
 sSensor.Graphics.Projection.UseDistance = true;
+sSensor.Graphics.Projection.DistanceType = 'eRangeConstraint';
 
 disp("Created: Satellite Sensor")
 

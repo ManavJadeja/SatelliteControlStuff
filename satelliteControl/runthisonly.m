@@ -39,19 +39,10 @@ fSensorArray = [fSensor1, fSensor2];
 
 % COMPUTE ACCESS
 for a = 1:length(facilityArray)
+    % NEED TO AVOID MAKING IT LIKE THIS BUT HONESTLY IDK HOW TO
     accessArray(a) = satellite.GetAccessToObject(fSensorArray(a));
     accessArray(a).ComputeAccess();
 end
-%{
-% Location 1
-access1 = satellite.GetAccessToObject(fSensor1);
-access1.ComputeAccess();
-% Location 2
-access2 = satellite.GetAccessToObject(fSensor2);
-access2.ComputeAccess();
-
-accessArray = [access1, access2];
-%}
 
 disp('Computed: Access')
 
