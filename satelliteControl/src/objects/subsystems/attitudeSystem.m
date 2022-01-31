@@ -42,7 +42,7 @@ classdef attitudeSystem < handle
             obj.qd = qd;
         end
         
-        function [dX] = attitudeSystemDynamics(dt, X, qd, obj)
+        function [dX] = attitudeSystemDynamics(dt, a, X, qd, obj)
             %%% attitudeSystemDynamics
             %       Attitude Control System Dynamics
             %   INPUTS:
@@ -58,8 +58,9 @@ classdef attitudeSystem < handle
             w = X(5:7);
             
             %%% EQUATIONS OF MOTION
-            % DISTURBANCE TORQUE
-            %Mm = magnetTorque(q, dt, obj);
+            % DISTURBANCE TORQUES
+            Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
+                1e-9*obj.magnetorquer.magneticField(a, :), q);
             
             % CONTROL TORQUE
             Mc = quatEMc(obj, q, w, obj.K, qd);
@@ -67,7 +68,7 @@ classdef attitudeSystem < handle
             % KINEMATICS
             dq = -qp(obj, [0,w],q)/2;
             
-            dw = obj.I\(-1*cpm(obj, w)*obj.I*(w') + Mc');
+            dw = obj.I\(-1*cpm(obj, w)*obj.I*(w') + Mm' + Mc');
             
             
             %%% OUTPUT

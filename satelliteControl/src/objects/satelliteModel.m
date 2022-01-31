@@ -44,7 +44,7 @@ classdef satelliteModel < handle
             % command = obj.commandSystem.command(t, obj.commandSystem, obj.powerSystem);
             
             dState = zeros(1,length(obj.stateI));
-            dState(1:7) = attitudeSystemDynamics(dt, state(1:7), obj.attitudeSystem.qd(a, :, command), obj.attitudeSystem);
+            dState(1:7) = attitudeSystemDynamics(dt, a, state(1:7), obj.attitudeSystem.qd(a, :, command), obj.attitudeSystem);
             
             %%% NEED TO FEED IN FULL STATE VECTOR
             %%% GENERATE COMMAND FROM CURRENT STATE VECTOR

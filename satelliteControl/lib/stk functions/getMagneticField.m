@@ -9,7 +9,7 @@ function [satBField] = getMagneticField(scenario, satellite, dt)
 %
 %   OUTPUTS:
 %       satBField           B Field at Satellite Location
-%                               ECF Frame (double: teslas)
+%                               ECF Frame (double: Tesla)
 %
 
 %%% DATA PROVIDER

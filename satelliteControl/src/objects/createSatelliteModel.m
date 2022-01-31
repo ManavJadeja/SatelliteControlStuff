@@ -69,7 +69,7 @@ POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY);
 COMMANDSYSTEM = commandSystem(1, 0.5, sunBools, accessBools);
 
 % ATTITUDE SYSTEM
-MAGNETORQUER = magnetorquer(0.2, [1,0,0], satBField);
+MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0,0,0], qd, diag([1, 1, 1]), [1,1], MAGNETORQUER);
 
 % SATELLITE MODEL

@@ -1,4 +1,5 @@
 %%% PRELIMINARY STUFF
+tic
 % ADDING TO PATH (TEMPORARY)
 addpath(genpath('lib'));
 addpath(genpath('res'));
@@ -11,7 +12,7 @@ uiApplication = actxserver('STK12.application');
 uiApplication.Visible = 1;
 root = uiApplication.Personality2;
 
-disp("Started: STK")
+disp("Started: Systems Tool Kit")
 
 
 %%% STK SETUP
@@ -21,7 +22,7 @@ disp("Started: STK")
 %}
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
-    '24 Dec 2021 01:30:00.000', '24 Dec 2021 04:00:00.000', 0.1);
+    '24 Dec 2021 01:30:00.000', '24 Dec 2021 03:30:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
 [facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [0 255 255],...
@@ -37,38 +38,50 @@ fSensorArray = [fSensor1, fSensor2];
     [255 0 0], 'C:\Program Files\AGI\STK 12\STKData\VO\Models\Space\cubesat_3u.dae',...
     'sSensor', 1, 0, 1500);
 
+toc
+disp('Added all STK Objects')
+
 % COMPUTE ACCESS
+tic
 for a = 1:length(facilityArray)
     % NEED TO AVOID MAKING IT LIKE THIS BUT HONESTLY IDK HOW TO
     accessArray(a) = satellite.GetAccessToObject(fSensorArray(a));
     accessArray(a).ComputeAccess();
 end
-
+toc
 disp('Computed: Access')
 
 % FINALIZE AND RESET ANIMATION PERIOD
 root.Rewind;
 
-
 %%% PRELIMINARY COMPUTATION
+%tic
 % TIME
-time = 0:dt:dt*(length(timeVector)-1);
-t = 1:length(timeVector);
+%time = 0:dt:dt*(length(timeVector)-1);
+%t = 1:length(timeVector);
+%toc
+disp('Created: Time Vector')
 
 
 %%% SATELLITE MODEL
 % CREATE MODEL (MATLAB)
+tic
 satelliteModel = createSatelliteModel(root, scenario, satellite, facilityArray, accessArray, timeVector, dt);
+toc
 disp('Created: Satellite Object in MATLAB')
 
 % SIMULATE SYSTEM DYNAMICS
 disp('Simuating: Satellite System Dynamics')
+tic
 satelliteModel.simulate();
-disp('Simulation: Complete')
+toc
+disp('Simulated: Satellite System Dynamics')
 
 % CREATE ATTITUDE FILE
-afQ(scenario, timeVector, satelliteModel.stateS(:,1:4));
-
+tic
+afQ(scenario, timeVector, satelliteModel.stateS(:,1:4), satelliteModel.stateS(:,5:7));
+disp('Created: Attitude File')
+toc
 % LOAD ATTITUDE FILE
 toAttitudeFile = [pwd, '\tmp\attitudeQ.a'];
 satellite.Attitude.External.Load(toAttitudeFile);
