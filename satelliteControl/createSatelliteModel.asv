@@ -4,6 +4,8 @@ function [SATELLITEMODEL] = createSatelliteModel(root, scenario, satellite, faci
 POWER SYSTEM
 obj = battery(capacity, soc, R_charge, R_discharge, maxV, maxI, cells, lineDrop)
 obj = solarArray(area, normalVector, efficiency)
+obj = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, experimentLoadCurrent,...
+                chargingLoadCurrent, communicationLoadCurrent)
 obj = powerSystem(time, battery, solarArray, sunVector)
 
 COMMAND SYSTEM
@@ -11,7 +13,8 @@ obj = commandSystem(socSafe, socUnsafe, sunBools, accessBools)
 
 ATTITUDE SYSTEM
 obj = magnetorquer(dipoleMagnitude, direction, magneticField)
-obj = attitudeSystem(time, t, stateI, qd, I, K, magnetorquer)
+obj = reactionWheel(stateI, inertia, maxMoment)
+obj = attitudeSystem(time, t, stateI, qd, I, K, magnetorquer, reactionWheel)
 
 SATELLITE MODEL
 obj = satelliteModel(time, dt, powerSystem, attitudeSystem, commandSystem)
@@ -70,7 +73,8 @@ COMMANDSYSTEM = commandSystem(1, 0.5, sunBools, accessBools);
 
 % ATTITUDE SYSTEM
 MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
-ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0,0,0], qd, diag([1, 1, 1]), [1,1], MAGNETORQUER);
+REACTIONWHEEL = reactionWheel([0,0,0], diag(5.6e-6*[1 1 1]), 6e-4);
+ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0.6,0.6,0.6], qd, 2.2e-3*diag([1, 1, 1]), [1,1], MAGNETORQUER, REACTIONWHEEL);
 
 % SATELLITE MODEL
 SATELLITEMODEL = satelliteModel(time, dt, POWERSYSTEM, ATTITUDESYSTEM, COMMANDSYSTEM);
