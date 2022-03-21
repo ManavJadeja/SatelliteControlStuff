@@ -51,7 +51,7 @@ inertiaW = diag(5.6e-6*[1 1 1]);
 state0W = [0,0,0];
 
 % CREATE OBJECTS
-wheel = reactionWheel(state0W, inertiaW);
+wheel = reactionWheel(state0W, inertiaW, 1);
 cube = satellite(state0, qd, K, inertiaS, t, dt, wheel, vertices, faces, color);
 
 % SIMULATE AND ANIMATE

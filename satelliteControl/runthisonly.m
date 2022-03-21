@@ -25,21 +25,22 @@ disp("Started: Systems Tool Kit")
     '24 Dec 2021 01:30:00.000', '24 Dec 2021 03:30:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
-[facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [0 255 255],...
+[facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [255 0 0],...
     'rugsSensor', 90, 0, 1500);
 [facility2, fSensor2] = facilityInfo(root, 'asugs', [33.4242 -111.9280 0], [255 255 0],...
-    'asugsSensor', 90, 0, 2500);
+    'asugsSensor', 90, 0, 1500);
+[facility3, fSensor3] = facilityInfo(root, 'tamgs', [30.6190 -96.3387 0], [128 0 0],...
+    'tamgsSensor', 90, 0, 1500);
 
-facilityArray = [facility1, facility2];
-fSensorArray = [fSensor1, fSensor2];
+facilityArray = [facility1, facility2, facility3];
+fSensorArray = [fSensor1, fSensor2, fSensor3];
 
 % SATELLITE AND SATELLITE SENSOR
 [satellite, sSensor] = satelliteInfo(root, 'SPICESat', 6371+350, 0, 45, 0, 0, 0,...
-    [255 0 0], 'C:\Program Files\AGI\STK 12\STKData\VO\Models\Space\cubesat_3u.dae',...
+    [255 0 0], 'C:\Program Files\AGI\STK 12\STKData\VO\Models\Space\cubesat_6u.dae',...
     'sSensor', 1, 0, 1500);
 
-toc
-disp('Added all STK Objects')
+disp(['Added all STK Objects: ', num2str(toc), ' seconds'])
 
 % COMPUTE ACCESS
 tic
@@ -48,42 +49,34 @@ for a = 1:length(facilityArray)
     accessArray(a) = satellite.GetAccessToObject(fSensorArray(a));
     accessArray(a).ComputeAccess();
 end
-toc
-disp('Computed: Access')
+disp(['Computed: Access: ', num2str(toc), ' seconds'])
 
 % FINALIZE AND RESET ANIMATION PERIOD
 root.Rewind;
-
-%%% PRELIMINARY COMPUTATION
-%tic
-% TIME
-%time = 0:dt:dt*(length(timeVector)-1);
-%t = 1:length(timeVector);
-%toc
-disp('Created: Time Vector')
 
 
 %%% SATELLITE MODEL
 % CREATE MODEL (MATLAB)
 tic
+disp('Creating: Satellite Object in MATLAB')
 satelliteModel = createSatelliteModel(root, scenario, satellite, facilityArray, accessArray, timeVector, dt);
-toc
-disp('Created: Satellite Object in MATLAB')
+disp(['Created: Satellite Object in MATLAB: ', num2str(toc), ' seconds'])
+
 
 % SIMULATE SYSTEM DYNAMICS
 disp('Simuating: Satellite System Dynamics')
 tic
 satelliteModel.simulate();
-toc
-disp('Simulated: Satellite System Dynamics')
+disp(['Simulated: Satellite System Dynamics: ', num2str(toc), ' seconds'])
 
 % CREATE ATTITUDE FILE
 tic
 afQ(scenario, timeVector, satelliteModel.stateS(:,1:4), satelliteModel.stateS(:,5:7));
-disp('Created: Attitude File')
-toc
+disp(['Created: Attitude File: ', num2str(toc), ' seconds'])
+
 % LOAD ATTITUDE FILE
 toAttitudeFile = [pwd, '\tmp\attitudeQ.a'];
 satellite.Attitude.External.Load(toAttitudeFile);
 
 
+disp('DONE')

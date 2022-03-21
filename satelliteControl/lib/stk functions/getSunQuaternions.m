@@ -32,7 +32,7 @@ try
     AngFactory = vgtSat.Angles.Factory;
     
     % Satellite Solar Array Normal Vector
-    satSolarArray = root.CentralBodies.Earth.Vgt.Vectors.Item('Fixed.-Z');
+    satSolarArray = root.CentralBodies.Earth.Vgt.Vectors.Item('Fixed.X');
         % This line assumes solar panel normal vector is -Z Body Axes
         % To make this more versatile, need to make it use the data from
         % solar array direction instead of this fixed value

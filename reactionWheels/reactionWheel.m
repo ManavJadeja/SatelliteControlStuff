@@ -4,28 +4,21 @@ classdef reactionWheel < handle
     
     properties
         state0              % Initial State Vector
-        stateC              % Current State Vector
         
         inertia             % Inertia Tensor
+        maxMoment           % Maximum Moment
         
         h                   % Handle
     end
     
     methods
-        function obj = reactionWheel(state0, inertia)
+        function obj = reactionWheel(state0, inertia, maxMoment)
             %%% reactionWheel
             %       Constructor
             obj.state0 = state0;
-            obj.stateC = state0;
             
             obj.inertia = inertia;
-        end
-        
-        function [stateC] = updateState(obj, dState)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            stateC = obj.stateC + dState;
-            obj.stateC = stateC;
+            obj.maxMoment = maxMoment;
         end
     end
 end

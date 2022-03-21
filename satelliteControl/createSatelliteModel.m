@@ -4,7 +4,9 @@ function [SATELLITEMODEL] = createSatelliteModel(root, scenario, satellite, faci
 POWER SYSTEM
 obj = battery(capacity, soc, R_charge, R_discharge, maxV, maxI, cells, lineDrop)
 obj = solarArray(area, normalVector, efficiency)
-obj = powerSystem(time, battery, solarArray, sunVector)
+obj = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, experimentLoadCurrent,...
+        chargingLoadCurrent, communicationLoadCurrent)
+obj = powerSystem(time, battery, batteryData, solarArray, electricalSystem)
 
 COMMAND SYSTEM
 obj = commandSystem(socSafe, socUnsafe, sunBools, accessBools)
@@ -64,7 +66,9 @@ batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony H
 BATTERY = battery(1000, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(1, [0,0,-1], 1);
-POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY);
+%ELECTRICALSYSTEM = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, 10, chargingLoadCurrent, 5);
+ELECTRICALSYSTEM = electricalSystem(0, 0, 10, 0, 5);
+POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
 
 % COMMAND SYSTEM
 COMMANDSYSTEM = commandSystem(1, 0.5, sunBools, accessBools);
@@ -72,7 +76,7 @@ COMMANDSYSTEM = commandSystem(1, 0.5, sunBools, accessBools);
 % ATTITUDE SYSTEM
 MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 REACTIONWHEEL = reactionWheel([0,0,0], diag(5.6e-6*[1 1 1]), 6e-4);
-ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0.6,0.6,0.6], qd, 2.2e-3*diag([1, 1, 1]), [1,1], MAGNETORQUER, REACTIONWHEEL);
+ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0.6,0.6,0.6], qd, 3.3e-3*diag([1, 1, 1]), [1,1], MAGNETORQUER, REACTIONWHEEL);
 
 % SATELLITE MODEL
 SATELLITEMODEL = satelliteModel(time, dt, POWERSYSTEM, ATTITUDESYSTEM, COMMANDSYSTEM);

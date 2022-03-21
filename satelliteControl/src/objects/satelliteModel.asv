@@ -47,26 +47,13 @@ classdef satelliteModel < handle
             % attitudeSystemDynamics(dt, X, qd, obj)
             % command = commandSystem.command(t, obj.commandSystem, obj.powerSystem);
             
-            %{
-            disp('IN SAT MODEL')
-            disp('OBJ')
-            disp(obj)
-            disp('TIME')
             disp(t)
-            disp('DT')
             disp(dt)
-            disp('STATE')
             disp(state)
-            disp('INDEX')
-            disp(a)
-            disp('COMMAND')
-            disp(command)
-            %}
+            
 
-            dState = zeros(1,length(state));
-
-            % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd)
-            dState(1:10) = attitudeSystemDynamics(obj.attitudeSystem, t, dt, state(1:10), a, obj.attitudeSystem.qd(a, :, command));
+            dState = zeros(1,length(obj.stateI));
+            dState(1:10) = attitudeSystemDynamics(dt, a, state(1:10), obj.attitudeSystem.qd(a, :, command), obj.attitudeSystem);
             %dState(11) = step(dt, command);
 
             %%% NEEDS TO BE IN A FORM THAT RK4 CAN USE
@@ -82,11 +69,15 @@ classdef satelliteModel < handle
             
             %%% SIMULATION LOOP
             % [X] = RK4(dynamics, t, dt, X, varargin)
+            % attitudeSystemDynamics(t, state(1:10), a, obj.attitudeSystem.qd(a, :, command), obj.attitudeSystem);
+            % attitudeSystemDynamics(t, X, a, qd, obj)
 
             for a = 1:length(obj.time)-1
                 command = obj.commandSystem.command(obj.powerSystem, a);
+                %obj.stateS(a+1,1:10) = RK4(@obj.attitudeSystem.attitudeSystemDynamics, obj.time(a), obj.dt,...
+                %    obj.stateS(a,1:10), a, obj.attitudeSystem.qd(a, :, command));
                 obj.stateS(a+1,1:10) = RK4(@obj.satelliteSystemDynamics, obj.time(a), obj.dt, obj.stateS(a,1:10), a, command);
-                obj.stateS(a+1,11) = obj.powerSystem.step(obj.dt, command);
+                obj.stateS(a+1,11) = obj.powerSystem.step(obj.dt, obj.time(a), command);
             end
         end
         

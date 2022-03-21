@@ -56,9 +56,9 @@ classdef powerSystem < handle
 
             %%% Compute current used by load
             loadCurrent = 0;
-            if action > 4 % communication mode
+            if action == 3 % communication mode
                 loadCurrent = obj.CommunicationLoadCurrent;
-            elseif action == 3 % experiment mode
+            elseif action == 4 % experiment mode
                 loadCurrent = obj.ExperimentLoadCurrent;
             end
 
@@ -90,7 +90,7 @@ classdef powerSystem < handle
             ahrChange = batteryCurrent * dt / 60 / 60;
             % Return the new SOC, clamped between 0 and 1
             soc = min(1, max(0, obj.stateI + ahrChange / obj.battery.capacity));
-            obj.stateI = soc;
+            obj.battery.soc = soc;
 
         end
         

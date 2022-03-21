@@ -12,7 +12,8 @@ classdef attitudeSystem < handle
         I                   % Inertia Matrix (diagonal)
         K                   % Quaternion Controller Gains
         
-        magnetorquer        % Magnetorquer (3x1 Dipole Moment)
+        magnetorquer        % Magnetorquer (object)
+        reactionWheel       % Reaction Wheel (object)
         
         qd                  % Desired Attitude Quaternions
                                 % 1: Nothing Mode
@@ -26,23 +27,26 @@ classdef attitudeSystem < handle
     end
     
     methods
-        function obj = attitudeSystem(time, t, stateI, qd, I, K, magnetorquer)
+        function obj = attitudeSystem(time, t, stateI, qd, I, K,...
+                magnetorquer, reactionWheel)
             %%% attitudeSystem
             %       Create an attitude control system
             
             obj.time = time;
             obj.t = t;
-            obj.stateI = stateI;
+            obj.stateI = [stateI, reactionWheel.stateI];
             
             obj.I = I;
             obj.K = K;
             
             obj.magnetorquer = magnetorquer;
+            obj.reactionWheel = reactionWheel;
             
             obj.qd = qd;
         end
         
-        function [dX] = attitudeSystemDynamics(dt, a, X, qd, obj)
+        function [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd)
+            % k1 = dt*dynamics(t,          dt, X,          varargin{:});
             %%% attitudeSystemDynamics
             %       Attitude Control System Dynamics
             %   INPUTS:
@@ -54,25 +58,50 @@ classdef attitudeSystem < handle
             %       dX          State Vector Derivative
             
             %%% SETUP
+            %{
+            disp('IN DYNAMICS')
+            disp('TIME')
+            disp(t)
+            disp('DT')
+            disp(dt)
+            disp('STATE')
+            disp(X)
+            disp('INDEX')
+            disp(a)
+            disp('QD')
+            disp(qd)
+            disp('OBJ')
+            disp(obj)
+            %}
+            
             q = X(1:4);
             w = X(5:7);
+            W = X(8:10);
             
-            %%% EQUATIONS OF MOTION
-            % DISTURBANCE TORQUES
+            %%% TORQUES
+            % MAGNETIC DISTURBANCE TORQUE
             Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
-                1e-9*obj.magnetorquer.magneticField(a, :), q);
+                1e-9*obj.magnetorquer.magneticField(a,:), q);
             
             % CONTROL TORQUE
             Mc = quatEMc(obj, q, w, obj.K, qd);
-            
+            if norm(Mc) > obj.reactionWheel.maxMoment
+                direction = Mc/norm(Mc);
+                Mc = obj.reactionWheel.maxMoment*direction;
+            end
+
+            % TOTAL TORQUE
+            M = Mm' + Mc';
+
             % KINEMATICS
+            % Satellite Motion
             dq = -qp(obj, [0,w],q)/2;
-            
-            dw = obj.I\(-1*cpm(obj, w)*obj.I*(w') + Mm' + Mc');
-            
+            dw = obj.I\(-1*cpm(obj, w)*obj.I*(w') + M);
+            % Reaction Wheel Motion
+            dW = obj.reactionWheel.inertia\(-1*cpm(obj, W)*obj.reactionWheel.inertia*(W') - M);
             
             %%% OUTPUT
-            dX = [dq, dw'];
+            dX = [dq, dw', dW'];
         end
         
         function [Mc] = quatEMc(obj, q, w, K, qd)
