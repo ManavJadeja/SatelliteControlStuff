@@ -47,6 +47,12 @@ classdef powerSystem < handle
         function [soc] = step(obj, dt, command)
             %%% Simulates a single time step of the power system
 
+            nothingLoadCurrent = obj.electricalSystem.nothingLoadCurrent;
+            safetyLoadCurrent = obj.electricalSystem.safetyLoadCurrent;
+            experimentLoadCurrent = obj.electricalSystem.experimentLoadCurrent;
+            chargingLoadCurrent = obj.electricalSystem.chargingLoadCurrent;
+            communicationLoadCurrent = obj.electricalSystem.communicationLoadCurrent;
+
             % Compute current produced by solar array
             solarArrayCurrent = 0;
             action = command;
@@ -56,10 +62,10 @@ classdef powerSystem < handle
 
             %%% Compute current used by load
             loadCurrent = 0;
-            if action == 3 % communication mode
-                loadCurrent = obj.CommunicationLoadCurrent;
-            elseif action == 4 % experiment mode
-                loadCurrent = obj.ExperimentLoadCurrent;
+            if action >= 5 % Communication Mode
+                loadCurrent = communicationLoadCurrent;
+            elseif action == 3 % Experiment mode
+                loadCurrent = experimentLoadCurrent;
             end
 
             %%% Net current through the battery
@@ -90,17 +96,9 @@ classdef powerSystem < handle
             ahrChange = batteryCurrent * dt / 60 / 60;
             % Return the new SOC, clamped between 0 and 1
             soc = min(1, max(0, obj.stateI + ahrChange / obj.battery.capacity));
-            obj.battery.soc = soc;
+            obj.stateI = soc;
 
         end
-        
-        function [dX] = powerSystemDynamics(obj, dt, X)
-            %%% powerSystemDynamics
-            %       Power System Dynamics
-            
-            dX = zeros(1,X);
-        end
-        
     end
 end
 

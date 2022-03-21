@@ -66,7 +66,6 @@ batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony H
 BATTERY = battery(1000, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(1, [0,0,-1], 1);
-%ELECTRICALSYSTEM = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, 10, chargingLoadCurrent, 5);
 ELECTRICALSYSTEM = electricalSystem(0, 0, 10, 0, 5);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
 
