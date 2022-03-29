@@ -81,7 +81,7 @@ classdef attitudeSystem < handle
             %%% TORQUES
             % MAGNETIC DISTURBANCE TORQUE
             Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
-                1e-9*obj.magnetorquer.magneticField(a,:), q);
+                1e-9*obj.magnetorquer.magneticField(1+floor(a/10),:), q);
             
             % CONTROL TORQUE
             Mc = quatEMc(obj, q, w, obj.K, qd);

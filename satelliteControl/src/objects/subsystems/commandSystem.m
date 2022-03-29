@@ -10,6 +10,8 @@ classdef commandSystem < handle
         
         sunBools                % Sun Bools
         accessBools             % Access Bools
+
+        stateS                  % Simulated State (commands)
     end
     
     methods
@@ -77,6 +79,9 @@ classdef commandSystem < handle
                     end
                 end
             end
+
+            obj.stateS(t) = command;
+
         end
     end
 end

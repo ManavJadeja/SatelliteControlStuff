@@ -19,26 +19,27 @@ disp("Started: Systems Tool Kit")
 %{
 [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime, scenStopTime, dt);
 [facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax)
+[satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sAN, sL, sColor, sModel, ssName, ssCHA, ssRmin, ssRmax)
 %}
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
-    '24 Dec 2021 01:30:00.000', '24 Dec 2021 03:30:00.000', 0.01);
+    '24 Dec 2021 01:30:00.000', '24 Dec 2021 06:00:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
 [facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [255 0 0],...
-    'rugsSensor', 90, 0, 1500);
+    'rugsSensor',  60, 0, 1500, 25, 85);
 [facility2, fSensor2] = facilityInfo(root, 'asugs', [33.4242 -111.9280 0], [255 255 0],...
-    'asugsSensor', 90, 0, 1500);
+    'asugsSensor', 60, 0, 1500, 25, 85);
 [facility3, fSensor3] = facilityInfo(root, 'tamgs', [30.6190 -96.3387 0], [128 0 0],...
-    'tamgsSensor', 90, 0, 1500);
+    'tamgsSensor', 60, 0, 1500, 25, 85);
 
 facilityArray = [facility1, facility2, facility3];
 fSensorArray = [fSensor1, fSensor2, fSensor3];
 
 % SATELLITE AND SATELLITE SENSOR
-[satellite, sSensor] = satelliteInfo(root, 'SPICESat', 6371+350, 0, 45, 0, 0, 0,...
+[satellite, sSensor] = satelliteInfo(root, 'SPICESat', 6371+400, 0, 45, 0, 0, 0,...
     [255 0 0], 'C:\Program Files\AGI\STK 12\STKData\VO\Models\Space\cubesat_6u.dae',...
-    'sSensor', 1, 0, 1500);
+    'sSensor', 4, 0, 1500);
 
 disp(['Added all STK Objects: ', num2str(toc), ' seconds'])
 

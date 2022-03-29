@@ -62,7 +62,7 @@ classdef powerSystem < handle
             if action >= 5 % Communication Mode
                 loadCurrent = communicationLoadCurrent;
             elseif action == 4 % Charging Mode
-                loadCurrent = chargingLoadCurrent;
+                loadCurrent = chargingLoadCurrent * obj.solarArray.efficiency;
             elseif action == 3 % Experiment Mode
                 loadCurrent = experimentLoadCurrent;
             elseif action == 2 % Safety Mode

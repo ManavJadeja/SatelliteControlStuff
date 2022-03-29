@@ -14,7 +14,7 @@ function [satBField] = getMagneticField(scenario, satellite, dt)
 
 %%% DATA PROVIDER
 % SEET MAGNETIC FIELD
-satBDP = satellite.DataProviders.GetDataPrvTimeVarFromPath('SEET Magnetic Field').Exec(scenario.StartTime, scenario.StopTime, dt);
+satBDP = satellite.DataProviders.GetDataPrvTimeVarFromPath('SEET Magnetic Field').Exec(scenario.StartTime, scenario.StopTime, 10*dt);
 
 
 %%% OUTPUT

@@ -34,13 +34,6 @@ classdef battery < handle
             
         end
         
-        function [soc] = batteryUse(dt, obj, powerIn, powerOut)
-            %%% batteryUse
-            %       Battery Charging
-            
-            % I have no idea how to write this, ask Sunny for help~
-        end
-        
     end
 end
 

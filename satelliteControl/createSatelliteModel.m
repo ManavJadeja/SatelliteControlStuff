@@ -36,14 +36,22 @@ t = 1:length(timeVector);
 accessQuaternions = zeros(length(t), 4, length(facilityArray));
 accessBools = false(length(t), length(facilityArray));
 for a = 1:length(facilityArray)
+    tic
+    disp(['Access for Facility ', num2str(a)])
     [accessBools(:, a), accessQuaternions(:, :, a)] = getAccessQuaternions(root, scenario, satellite, facilityArray(a), accessArray(a), timeVector, dt);
+    toc
 end
 
+tic
+disp('Sun Bools and Quaternions')
 [sunBools, sunQuaternions] = getSunQuaternions(root, scenario, satellite, timeVector, dt);
+toc
 
 % MAGNETIC FIELD
+tic
+disp('Magnetic Field')
 satBField = getMagneticField(scenario, satellite, dt);
-
+toc
 
 %%% COMPONENTS AND SUBSYSTEMS
 % Command System
@@ -63,10 +71,10 @@ end
 % POWER SYSTEM
 batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
 
-BATTERY = battery(1000, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
+BATTERY = battery(6.8, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
-SOLARARRAY = solarArray(1, [0,0,-1], 1);
-ELECTRICALSYSTEM = electricalSystem(0, 0, 10, 0, 5);
+SOLARARRAY = solarArray(0.06, [1,0,0], 1);
+ELECTRICALSYSTEM = electricalSystem(2, 0, 10, 0.3, 5);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
 
 % COMMAND SYSTEM
@@ -75,7 +83,7 @@ COMMANDSYSTEM = commandSystem(1, 0.5, sunBools, accessBools);
 % ATTITUDE SYSTEM
 MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 REACTIONWHEEL = reactionWheel([0,0,0], diag(5.6e-6*[1 1 1]), 6e-4);
-ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0.6,0.6,0.6], qd, 3.3e-3*diag([1, 1, 1]), [1,1], MAGNETORQUER, REACTIONWHEEL);
+ATTITUDESYSTEM = attitudeSystem(time, t, [1,0,0,0,0,0,0], qd, 3.3e-3*diag([1, 2, 3]), [1,1], MAGNETORQUER, REACTIONWHEEL);
 
 % SATELLITE MODEL
 SATELLITEMODEL = satelliteModel(time, dt, POWERSYSTEM, ATTITUDESYSTEM, COMMANDSYSTEM);

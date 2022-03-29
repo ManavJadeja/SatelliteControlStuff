@@ -24,8 +24,8 @@ function [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime
 
 %%% DEFINITIONS
 % TIME VECTOR
-scenStart = datetime(scenStartTime, 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSS', 'Format', 'dd MMM yyyy HH:mm:ss.S');
-scenStop = datetime(scenStopTime, 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSS', 'Format', 'dd MMM yyyy HH:mm:ss.S');
+scenStart = datetime(scenStartTime, 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSS', 'Format', 'dd MMM yyyy HH:mm:ss.SSS');
+scenStop = datetime(scenStopTime, 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSS', 'Format', 'dd MMM yyyy HH:mm:ss.SSS');
 interval = seconds(dt);
 timeVector = (scenStart:interval:scenStop)';
 

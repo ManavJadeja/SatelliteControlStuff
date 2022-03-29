@@ -32,6 +32,7 @@ classdef satelliteModel < handle
             obj.stateI = [
                 attitudeSystem.stateI,...
                 powerSystem.stateI,...
+                0,...
             ];
             % state vector format (update as needed)
                 % 1:4   Satellite Attitude Quaternions
@@ -67,7 +68,6 @@ classdef satelliteModel < handle
 
             % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd)
             dState(1:10) = attitudeSystemDynamics(obj.attitudeSystem, t, dt, state(1:10), a, obj.attitudeSystem.qd(a, :, command));
-            %dState(11) = step(dt, command);
 
             %%% NEEDS TO BE IN A FORM THAT RK4 CAN USE
         end
@@ -87,6 +87,7 @@ classdef satelliteModel < handle
                 command = obj.commandSystem.command(obj.powerSystem, a);
                 obj.stateS(a+1,1:10) = RK4(@obj.satelliteSystemDynamics, obj.time(a), obj.dt, obj.stateS(a,1:10), a, command);
                 obj.stateS(a+1,11) = obj.powerSystem.step(obj.dt, command);
+                obj.stateS(a+1,12) = command;
             end
         end
         
