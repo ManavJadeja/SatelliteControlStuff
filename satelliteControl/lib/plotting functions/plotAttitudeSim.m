@@ -79,8 +79,10 @@ title('Reaction Wheel Z Angular Velocity')
 
 % MAGNETIC FIELD
 figure('Name', 'Magnetic Field', 'Position', [100 100 900 700])
-plot(1:length(satelliteModel.attitudeSystem.magnetorquer.magneticField), 1e-9*satelliteModel.attitudeSystem.magnetorquer.magneticField)
-xlabel('Magnetic Field (Teslas)')
-ylabel('Time (hours)')
+length((1:length(satelliteModel.stateS(:,11))/10)*dt/60/60)
+size(satelliteModel.attitudeSystem.magnetorquer.magneticField)
+plot((1:1+length(satelliteModel.stateS(:,11))/10)*10*dt/60/60, 1e-9*satelliteModel.attitudeSystem.magnetorquer.magneticField)
+xlabel('Time (hours)')
+ylabel('Magnetic Field (Teslas)')
 
 end
