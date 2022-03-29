@@ -72,43 +72,55 @@ end
 
 %%% DATA PROVIDERS
 % ACCESS WINDOWS
-accessDP = access.DataProviders.Item('Access Data').Exec(scenario.StartTime, scenario.StopTime);
-accessStart = cell2mat(accessDP.DataSets.GetDataSetByName('Start Time').GetValues);
-accessStop = cell2mat(accessDP.DataSets.GetDataSetByName('Stop Time').GetValues);
+try
+    accessDP = access.DataProviders.Item('Access Data').Exec(scenario.StartTime, scenario.StopTime);
+    accessStart = cell2mat(accessDP.DataSets.GetDataSetByName('Start Time').GetValues);
+    accessStop = cell2mat(accessDP.DataSets.GetDataSetByName('Stop Time').GetValues);
 
-% ACCESS ROTATION AXIS AND ANGLE
-accessRotationAxis = satellite.DataProviders.GetDataPrvTimeVarFromPath(['Vectors(Fixed)/', arAxisName]).Exec(scenario.StartTime, scenario.StopTime, dt);
-accessRotationAngle = satellite.DataProviders.GetDataPrvTimeVarFromPath(['Angles/', arAngleName]).Exec(scenario.StartTime, scenario.StopTime, dt);
-
-
-%%% EXTRACT DATA
-% LIST OF AVAILABLE ACCESS TIMES
-[accessTimes, eachCount] = interpolateTimes(accessStart, accessStop, dt);
-
-% ACCESS ROTATION AXIS
-accessRotationAxis = [
-    cell2mat(accessRotationAxis.DataSets.GetDataSetByName('x/Magnitude').GetValues),...
-    cell2mat(accessRotationAxis.DataSets.GetDataSetByName('y/Magnitude').GetValues),...
-    cell2mat(accessRotationAxis.DataSets.GetDataSetByName('z/Magnitude').GetValues),...
-];
-
-% ACCESS ROTATION ANGLE
-accessRotationAngle = cell2mat(accessRotationAngle.DataSets.GetDataSetByName('Angle').GetValues);
+    % ACCESS ROTATION AXIS AND ANGLE
+    accessRotationAxis = satellite.DataProviders.GetDataPrvTimeVarFromPath(['Vectors(Fixed)/', arAxisName]).Exec(scenario.StartTime, scenario.StopTime, dt);
+    accessRotationAngle = satellite.DataProviders.GetDataPrvTimeVarFromPath(['Angles/', arAngleName]).Exec(scenario.StartTime, scenario.StopTime, dt);
 
 
-%%% COMPUTATION
-% ACCESS BOOLEANS
-a = 1;
-for i = 1:count
-    if (a < sum(eachCount)) && (abs(timeVector(i) - accessTimes(a)) <= 0.000005)
-        accessBools(i) = true;
-        a = a + 1;
+    %%% EXTRACT DATA
+    % ACCESS ROTATION AXIS
+    accessRotationAxis = [
+        cell2mat(accessRotationAxis.DataSets.GetDataSetByName('x/Magnitude').GetValues),...
+        cell2mat(accessRotationAxis.DataSets.GetDataSetByName('y/Magnitude').GetValues),...
+        cell2mat(accessRotationAxis.DataSets.GetDataSetByName('z/Magnitude').GetValues),...
+    ];
+
+    % ACCESS ROTATION ANGLE
+    accessRotationAngle = cell2mat(accessRotationAngle.DataSets.GetDataSetByName('Angle').GetValues);
+
+
+    %%% COMPUTATION
+    chunks = 500000;
+        % If you start having memory problems, reduce 'size' as needed
+    numChunks = floor(count/chunks);
+    
+    for a = 1:numChunks
+        % ACCESS QUATERNIONS
+        accessQuaternions(1+(a-1)*chunks:a*chunks,1) = cosd(accessRotationAngle(1+(a-1)*chunks:a*chunks)/2);
+        accessQuaternions(1+(a-1)*chunks:a*chunks,2:4) = accessRotationAxis(1+(a-1)*chunks:a*chunks,:).*sind(accessRotationAngle(1+(a-1)*chunks:a*chunks)/2);
     end
+
+    accessQuaternions(1+numChunks*chunks:end,1) = cosd(accessRotationAngle(1+numChunks*chunks:end)/2);
+    accessQuaternions(1+numChunks*chunks:end,2:4) = accessRotationAxis(1+numChunks*chunks:end,:).*sind(accessRotationAngle(1+numChunks*chunks:end)/2);
+
+
+    % ACCESS BOOLS
+    for a = 1:size(accessStart, 1)
+        accessStarti = datetime(accessStart(a,:), 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSSSSSSSS', 'Format', 'dd MMM yyy HH:mm:ss.SSS');
+        accessStopi = datetime(accessStop(a,:), 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSSSSSSSS', 'Format', 'dd mmm yyy HH:mm:ss.SSS');
+
+        startIndex = find(dateshift(accessStarti, 'start', 'second') == timeVector);
+        stopIndex = find(dateshift(accessStopi, 'start', 'second') == timeVector);
+        accessBools(startIndex:stopIndex) = true;
+    end
+
+catch
+    disp('NO ACCESS WINDOWS FOUND')
 end
-
-% ACCESS QUATERNIONS
-accessQuaternions(:,1) = cosd(accessRotationAngle/2);
-accessQuaternions(:,2:4) = accessRotationAxis.*sind(accessRotationAngle/2);
-
 
 end
