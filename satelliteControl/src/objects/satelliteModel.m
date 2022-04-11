@@ -77,6 +77,7 @@ classdef satelliteModel < handle
             %       Simulation for satellite model
             
             %%% FIRST STEP
+            f = waitbar(0,'Simulating...', 'Name', 'Simulation Progress');
             obj.stateS(1,:) = obj.stateI;
             
             
@@ -88,7 +89,15 @@ classdef satelliteModel < handle
                 obj.stateS(a+1,1:10) = RK4(@obj.satelliteSystemDynamics, obj.time(a), obj.dt, obj.stateS(a,1:10), a, command);
                 obj.stateS(a+1,11) = obj.powerSystem.step(obj.dt, command);
                 obj.stateS(a+1,12) = command;
+
+                if rem(a,1000) == 0
+                    percentDone = a/(length(obj.time));
+                    waitbar(percentDone, f, sprintf('%.2f', 100*percentDone))
+                end
+
             end
+            delete(f)
+
         end
         
     end

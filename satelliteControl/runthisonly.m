@@ -18,20 +18,20 @@ disp("Started: Systems Tool Kit")
 %%% STK SETUP
 %{
 [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime, scenStopTime, dt);
-[facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax)
+[facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax, fsElmin, fsElmax)
 [satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sAN, sL, sColor, sModel, ssName, ssCHA, ssRmin, ssRmax)
 %}
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
-    '24 Dec 2021 01:30:00.000', '24 Dec 2021 06:00:00.000', 0.01);
+    '24 Dec 2021 00:00:00.000', '25 Dec 2021 00:00:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
 [facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [255 0 0],...
-    'rugsSensor',  60, 0, 1500, 25, 85);
+    'rugsSensor',  90, 0, 3000, 10, 90);
 [facility2, fSensor2] = facilityInfo(root, 'asugs', [33.4242 -111.9280 0], [255 255 0],...
-    'asugsSensor', 60, 0, 1500, 25, 85);
+    'asugsSensor', 90, 0, 3000, 10, 90);
 [facility3, fSensor3] = facilityInfo(root, 'tamgs', [30.6190 -96.3387 0], [128 0 0],...
-    'tamgsSensor', 60, 0, 1500, 25, 85);
+    'tamgsSensor', 90, 0, 3000, 10, 90);
 
 facilityArray = [facility1, facility2, facility3];
 fSensorArray = [fSensor1, fSensor2, fSensor3];

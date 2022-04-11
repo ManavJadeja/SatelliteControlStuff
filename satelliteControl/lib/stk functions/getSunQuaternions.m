@@ -19,7 +19,7 @@ function [sunBools, sunQuaternions] = getSunQuaternions(root, scenario, satellit
 
 %%% SETUP
 % INTIALIZE MATRICES
-count = length(timeVector);
+count = 1+(length(timeVector)-1)/10;
 sunBools = false(count,1);
 sunQuaternions = zeros(count,4);
 
@@ -70,13 +70,13 @@ satLTstart = cell2mat(satLTDP.DataSets.GetDataSetByName('Start Time').GetValues)
 satLTstop = cell2mat(satLTDP.DataSets.GetDataSetByName('Stop Time').GetValues);
 
 % SUN ROTATION AXIS AND ANGLE
-sunRotationAxis = satellite.DataProviders.GetDataPrvTimeVarFromPath('Vectors(Fixed)/sunRotationAxis').Exec(scenario.StartTime, scenario.StopTime, dt);
-sunRotationAngle = satellite.DataProviders.GetDataPrvTimeVarFromPath('Angles/sunRotationAngle').Exec(scenario.StartTime, scenario.StopTime, dt);
+sunRotationAxis = satellite.DataProviders.GetDataPrvTimeVarFromPath('Vectors(Fixed)/sunRotationAxis').Exec(scenario.StartTime, scenario.StopTime, 10*dt);
+sunRotationAngle = satellite.DataProviders.GetDataPrvTimeVarFromPath('Angles/sunRotationAngle').Exec(scenario.StartTime, scenario.StopTime, 10*dt);
 
 
 %%% EXTRACT DATA
 % LIST OF AVAILABLE SUN TIMES
-[sunTimes, eachCount] = interpolateTimes(satLTstart, satLTstop, dt);
+% [sunTimes, eachCount] = interpolateTimes(satLTstart, satLTstop, dt);
 
 % SUN ROTATION AXIS
 sunRotationAxis = [
@@ -91,6 +91,7 @@ sunRotationAngle = cell2mat(sunRotationAngle.DataSets.GetDataSetByName('Angle').
 
 %%% COMPUTATION
 % SUN BOOLEANS
+%{
 a = 1;
 for i = 1:count
     if (a < sum(eachCount)) && (abs(timeVector(i) - sunTimes(a)) <= 0.000005)
@@ -98,10 +99,37 @@ for i = 1:count
         a = a + 1;
     end
 end
+%}
+
+for a = 1:size(satLTstart, 1)
+    sunStarti = datetime(satLTstart(a,:), 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSSSSSSSS', 'Format', 'dd MMM yyy HH:mm:ss.SSS');
+    sunStopi = datetime(satLTstop(a,:), 'InputFormat', 'dd MMM yyyy HH:mm:ss.SSSSSSSSS', 'Format', 'dd mmm yyy HH:mm:ss.SSS');
+
+    startIndex = find(dateshift(sunStarti, 'end', 'second') == timeVector(1:10:end));
+    stopIndex = find(dateshift(sunStopi, 'end', 'second') == timeVector(1:10:end));
+    sunBools(startIndex:stopIndex) = true;
+end
+
+
+% COMPUTATION
+chunks = 500000;
+    % If you start having memory problems, reduce 'size' as needed
+numChunks = floor(count/chunks);
+endPiece = rem(count, chunks);
 
 % SUN QUATERNIONS
-sunQuaternions(:,1) = cosd(sunRotationAngle/2);
-sunQuaternions(:,2:4) = sunRotationAxis.*sind(sunRotationAngle/2);
+for a = 1:numChunks
+    sunQuaternions(1+(a-1)*chunks:a*chunks,1) = cosd(sunRotationAngle(1+(a-1)*chunks:a*chunks)/2);
+    sunQuaternions(1+(a-1)*chunks:a*chunks,2:4) = sunRotationAxis(1+(a-1)*chunks:a*chunks,:).*sind(sunRotationAngle(1+(a-1)*chunks:a*chunks)/2);
+end
+
+disp(size(sunQuaternions))
+disp(1+numChunks*chunks)
+disp(endPiece+numChunks*chunks)
+
+sunQuaternions(1+numChunks*chunks:end,1) = cosd(sunRotationAngle(1+numChunks*chunks:endPiece+numChunks*chunks)/2);
+sunQuaternions(1+numChunks*chunks:end,2:4) = sunRotationAxis(1+numChunks*chunks:endPiece+numChunks*chunks,:).*sind(sunRotationAngle(1+numChunks*chunks:endPiece+numChunks*chunks)/2);
+
 
 
 end

@@ -37,21 +37,18 @@ accessQuaternions = zeros(length(t), 4, length(facilityArray));
 accessBools = false(length(t), length(facilityArray));
 for a = 1:length(facilityArray)
     tic
-    disp(['Access for Facility ', num2str(a)])
     [accessBools(:, a), accessQuaternions(:, :, a)] = getAccessQuaternions(root, scenario, satellite, facilityArray(a), accessArray(a), timeVector, dt);
-    toc
+    disp(['Computed: Facility ', num2str(a),' Access: ', num2str(toc), ' seconds'])
 end
 
 tic
-disp('Sun Bools and Quaternions')
 [sunBools, sunQuaternions] = getSunQuaternions(root, scenario, satellite, timeVector, dt);
-toc
+disp(['Computed: Sun Bools and Quaternions: ', num2str(toc), ' seconds'])
 
 % MAGNETIC FIELD
 tic
-disp('Magnetic Field')
 satBField = getMagneticField(scenario, satellite, dt);
-toc
+disp(['Computed: Magnetic Field: ', num2str(toc), ' seconds'])
 
 %%% COMPONENTS AND SUBSYSTEMS
 % Command System
@@ -74,7 +71,7 @@ batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony H
 BATTERY = battery(6.8, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(0.06, [1,0,0], 1);
-ELECTRICALSYSTEM = electricalSystem(2, 0, 10, 0.3, 5);
+ELECTRICALSYSTEM = electricalSystem(3, 1, 10, 0.3, 5);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
 
 % COMMAND SYSTEM

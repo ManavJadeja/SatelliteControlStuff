@@ -39,14 +39,33 @@ fclose(fid);
 
 
 %%% ADD QUATERNION AND ANGULAR VELOCITY DATA
-writematrix([datestr(timeVector(:), 'dd mmm yyyy HH:MM:SS.FFF'), repmat(' ',[count 1]),...
-    num2str(quaternions(:,2), '%+.6e'), repmat(' ',[count 1]),...           % qx
-    num2str(quaternions(:,3), '%+.6e'), repmat(' ',[count 1]),...           % qy
-    num2str(quaternions(:,4), '%+.6e'), repmat(' ',[count 1]),...           % qz
-    num2str(quaternions(:,1), '%+.6e'), repmat(' ',[count 1]),...           % qw
-    num2str(angularVelocities(:,1), '%+.6e'), repmat(' ',[count 1]),...     % wx
-    num2str(angularVelocities(:,2), '%+.6e'), repmat(' ',[count 1]),...     % wy
-    num2str(angularVelocities(:,3), '%+.6e'), repmat(' ',[count 1]),...     % wz
+chunks = 500000;
+    % If you start having memory problems, reduce 'size' as needed
+numChunks = floor(count/chunks);
+for a = 1:numChunks
+    writematrix([datestr(timeVector(1+(a-1)*chunks:a*chunks), 'dd mmm yyyy HH:MM:SS.FFF'), repmat(' ',[chunks 1]),...
+        num2str(quaternions(1+(a-1)*chunks:a*chunks,2), '%+.6e'), repmat(' ',[chunks 1]),...           % qx
+        num2str(quaternions(1+(a-1)*chunks:a*chunks,3), '%+.6e'), repmat(' ',[chunks 1]),...           % qy
+        num2str(quaternions(1+(a-1)*chunks:a*chunks,4), '%+.6e'), repmat(' ',[chunks 1]),...           % qz
+        num2str(quaternions(1+(a-1)*chunks:a*chunks,1), '%+.6e'), repmat(' ',[chunks 1]),...           % qw
+        num2str(angularVelocities(1+(a-1)*chunks:a*chunks,1), '%+.6e'), repmat(' ',[chunks 1]),...     % wx
+        num2str(angularVelocities(1+(a-1)*chunks:a*chunks,2), '%+.6e'), repmat(' ',[chunks 1]),...     % wy
+        num2str(angularVelocities(1+(a-1)*chunks:a*chunks,3), '%+.6e'), repmat(' ',[chunks 1]),...     % wz
+    ],...
+    'tmp\attitudeQ.txt', 'Delimiter', 'space', 'QuoteStrings', false, 'WriteMode', 'append')
+
+end
+
+endSize = rem(count, chunks);
+
+writematrix([datestr(timeVector(1+numChunks*chunks:end), 'dd mmm yyyy HH:MM:SS.FFF'), repmat(' ',[endSize 1]),...
+    num2str(quaternions(1+numChunks*chunks:end,2), '%+.6e'), repmat(' ',[endSize 1]),...           % qx
+    num2str(quaternions(1+numChunks*chunks:end,3), '%+.6e'), repmat(' ',[endSize 1]),...           % qy
+    num2str(quaternions(1+numChunks*chunks:end,4), '%+.6e'), repmat(' ',[endSize 1]),...           % qz
+    num2str(quaternions(1+numChunks*chunks:end,1), '%+.6e'), repmat(' ',[endSize 1]),...           % qw
+    num2str(angularVelocities(1+numChunks*chunks:end,1), '%+.6e'), repmat(' ',[endSize 1]),...     % wx
+    num2str(angularVelocities(1+numChunks*chunks:end,2), '%+.6e'), repmat(' ',[endSize 1]),...     % wy
+    num2str(angularVelocities(1+numChunks*chunks:end,3), '%+.6e'), repmat(' ',[endSize 1]),...     % wz
     ],...
     'tmp\attitudeQ.txt', 'Delimiter', 'space', 'QuoteStrings', false, 'WriteMode', 'append')
 
