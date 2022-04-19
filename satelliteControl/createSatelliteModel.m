@@ -43,6 +43,7 @@ end
 
 tic
 [sunBools, sunQuaternions] = getSunQuaternions(root, scenario, satellite, timeVector, dt);
+sunBools = imresize(sunBools, [length(timeVector) 1], 'nearest');
 disp(['Computed: Sun Bools and Quaternions: ', num2str(toc), ' seconds'])
 
 % MAGNETIC FIELD
@@ -60,7 +61,7 @@ disp(['Computed: Magnetic Field: ', num2str(toc), ' seconds'])
     % 6: Access Location 2
     % n+4: Access Location n
 qd = zeros(length(timeVector), 4, 4+length(facilityArray));
-qd(:,:,4) = sunQuaternions;                 % 4: Charging Mode
+qd(:,:,4) = imresize(sunQuaternions, [length(timeVector) 4], 'nearest');    % 4: Charging Mode
 for a = 1:length(facilityArray)
     qd(:,:,a+4) = accessQuaternions(:,:,a);
 end

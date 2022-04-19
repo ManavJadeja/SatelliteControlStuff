@@ -123,9 +123,9 @@ for a = 1:numChunks
     sunQuaternions(1+(a-1)*chunks:a*chunks,2:4) = sunRotationAxis(1+(a-1)*chunks:a*chunks,:).*sind(sunRotationAngle(1+(a-1)*chunks:a*chunks)/2);
 end
 
-disp(size(sunQuaternions))
-disp(1+numChunks*chunks)
-disp(endPiece+numChunks*chunks)
+%disp(size(sunQuaternions))
+%disp(1+numChunks*chunks)
+%disp(endPiece+numChunks*chunks)
 
 sunQuaternions(1+numChunks*chunks:end,1) = cosd(sunRotationAngle(1+numChunks*chunks:endPiece+numChunks*chunks)/2);
 sunQuaternions(1+numChunks*chunks:end,2:4) = sunRotationAxis(1+numChunks*chunks:endPiece+numChunks*chunks,:).*sind(sunRotationAngle(1+numChunks*chunks:endPiece+numChunks*chunks)/2);
