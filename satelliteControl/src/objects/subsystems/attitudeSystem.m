@@ -5,11 +5,17 @@ classdef attitudeSystem < handle
     %   Created by Manav Jadeja on 20220102
 
     properties
-        time                % Time Vector
-        t                   % Time Index
-        stateI              % Initial State Vector
+        state0              % State Vector (Initial)
+                                % 1:4       SC Quaternions (Actual)
+                                % 5:7       SC Angular Velocities (Actual)
+                                % 8:10      RW Angular Velocities (Actual)
+                
+                                % 11:14     SC Quaternions (Estimate)
+                                % 15:17     SC Angular Velocities (Estimate)
+                                % 18:20     RW Angular Velocities (Estimate)
         
-        I                   % Inertia Matrix (diagonal)
+        inertiaA            % Inertia Matrix (Actual)
+        inertiaE            % Inertia Matrix (Estimate)
         K                   % Quaternion Controller Gains
         
         magnetorquer        % Magnetorquer (object)
@@ -27,16 +33,20 @@ classdef attitudeSystem < handle
     end
     
     methods
-        function obj = attitudeSystem(time, t, stateI, qd, I, K,...
+        function obj = attitudeSystem(state0, state0Error, qd, inertiaA, inertiaError, K,...
                 magnetorquer, reactionWheel)
             %%% attitudeSystem
             %       Create an attitude control system
             
-            obj.time = time;
-            obj.t = t;
-            obj.stateI = [stateI, reactionWheel.stateI];
+            obj.state0 = [
+                state0,...                  % SC State Vector (Initial Actual)
+                reactionWheel.state0A,...   % RW State Vector (Initial Actual)
+                state0 + state0Error,...    % SC State Vector (Initial Estimate)
+                reactionWheel.state0E;      % RW State Vector (Initial Estimate)
+            ];
             
-            obj.I = I;
+            obj.inertiaA = inertiaA;
+            obj.inertiaE = inertiaA + inertiaError;
             obj.K = K;
             
             obj.magnetorquer = magnetorquer;
@@ -45,14 +55,14 @@ classdef attitudeSystem < handle
             obj.qd = qd;
         end
         
-        function [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd)
+        function [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd, scI, rwI)
             % k1 = dt*dynamics(t,          dt, X,          varargin{:});
             %%% attitudeSystemDynamics
             %       Attitude Control System Dynamics
             %   INPUTS:
             %       dt          Time Step
             %       X           State Vector
-            %       qd          Quaternion (desired)
+            %       qd          Quaternions (desired)
             %       obj         attitudeSystem (obj)
             %   OUTPUTS:
             %       dX          State Vector Derivative
@@ -80,8 +90,10 @@ classdef attitudeSystem < handle
             
             %%% TORQUES
             % MAGNETIC DISTURBANCE TORQUE
+            %{
             Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
-                1e-9*obj.magnetorquer.magneticField(1+floor(a/10),:), q);
+                1e-9*obj.magnetorquer.magneticField(a,:), q);
+            %}
             
             % CONTROL TORQUE
             Mc = quatEMc(obj, q, w, obj.K, qd);
@@ -91,14 +103,14 @@ classdef attitudeSystem < handle
             end
 
             % TOTAL TORQUE
-            M = Mm' + Mc';
+            M = Mc'; % No Mm term for now;
 
             % KINEMATICS
             % Satellite Motion
-            dq = -qp(obj, [0,w],q)/2;
-            dw = obj.I\(-1*cpm(obj, w)*obj.I*(w') + M);
+            dq = -qp(obj, [0,w], q)/2;
+            dw = scI\(-1*cpm(obj, w)*scI*(w') + M);
             % Reaction Wheel Motion
-            dW = obj.reactionWheel.inertia\(-1*cpm(obj, W)*obj.reactionWheel.inertia*(W') - M);
+            dW = rwI\(-1*cpm(obj, W)*rwI*(W') - M);
             
             %%% OUTPUT
             dX = [dq, dw', dW'];

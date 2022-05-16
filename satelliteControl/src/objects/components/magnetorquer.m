@@ -1,6 +1,6 @@
 classdef magnetorquer < handle
     %%% magnetorquer
-    %       Magnetorquer Object
+    %       Magnetorquer (Object)
     %
     %   Created by Manav Jadeja on 20220105
     

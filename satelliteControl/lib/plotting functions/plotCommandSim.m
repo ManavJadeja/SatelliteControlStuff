@@ -7,7 +7,7 @@ timeHours = (1:length(satelliteModel.stateS(:,12))) * dt / 60 / 60;
 
 % BATTERY
 figure('Name', 'Command Simulation', 'Position', [100 100 900 700])
-plot(timeHours, satelliteModel.stateS(:,12))
+plot(timeHours, satelliteModel.stateS(:,22))
 xlim([0 timeHours(end)])
 ylim([0 8])
 yticklabels({'', 'Nothing Mode','Safety Mode','Experiment Mode',...
@@ -24,5 +24,13 @@ ylabel('Command Number')
     % 5: Access Location 1
     % 6: Access Location 2
     % N+4: Access Location N
+
+figure('Name', 'Data Storage', 'Position', [100 100 900 700])
+plot(timeHours, satelliteModel.stateS(:,23)./satelliteModel.commandSystem.ssd.capacity)
+xlim([0 timeHours(end)])
+ylim([0 1])
+title('Data Storage')
+xlabel('Time (hours)')
+ylabel('Percent Filled')
 
 end

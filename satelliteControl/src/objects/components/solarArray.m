@@ -1,6 +1,6 @@
 classdef solarArray
     %%% solarArray
-    %       Solar Array Object
+    %       Solar Array (Object)
     %
     %   Created by Manav Jadeja 20220103
     

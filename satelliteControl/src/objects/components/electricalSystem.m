@@ -1,6 +1,8 @@
 classdef electricalSystem
-    %ELECTRICALSYSTEM Summary of this class goes here
-    %   Detailed explanation goes here
+    %%% electricalSystem
+    %       Electrical System Loads (Object)
+    %
+    %   Created by Manav Jadeja on 20220110
     
     properties
         nothingLoadCurrent          % Current Draw for Nothing Mode (Amps)

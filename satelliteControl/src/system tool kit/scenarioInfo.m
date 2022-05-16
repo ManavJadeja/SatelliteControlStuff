@@ -1,8 +1,6 @@
 function [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime, scenStopTime, dt)
 %%% SCENARIO INFORMATION
 %   Information for Scenario (object) in Systems Tool Kit
-%       1) Input Parameters
-%       2) Definitions derived from Parameters
 %
 %   Parameters
 %       scenName                Scenario Name (char array: name)
@@ -15,7 +13,7 @@ function [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime
 %   Definitions
 %       scenStartTime           Analysis Start Time (datetime: date)
 %       scenStopTime            Analysis Stop Time (datetime: date)
-%       interval                Time Step (duration: seconds)
+%       interval                Time Step (duration: sec)
 %       timeVector              Time Vector (column list of datetimes)
 %       scenario                Scenario (object)
 %
@@ -30,19 +28,18 @@ interval = seconds(dt);
 timeVector = (scenStart:interval:scenStop)';
 
 % SCENARIO (OBJECT)
-scenario = root.Children.New('eScenario',scenName);
+scenario = root.Children.New('eScenario', scenName);
 
 % SCENARIO PROPERTIES
 scenario.SetTimePeriod(scenStartTime, scenStopTime)
 scenario.StartTime = scenStartTime;
 scenario.StopTime = scenStopTime;
 
-% SCENARIO FONTS
+% GRAPHICS STUFF
 scenario.VO.MediumFont.Name = 'Comic Sans MS';
 scenario.VO.MediumFont.PtSize = 16;
 scenario.VO.MediumFont.Bold = false;
 
-disp("Created: Scenario")
-
+disp('Created: Scenario')
 
 end

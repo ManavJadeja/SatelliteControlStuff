@@ -1,23 +1,29 @@
 classdef reactionWheel < handle
-    %REACTIONWHEEL Summary of this class goes here
-    %   Detailed explanation goes here
+    %%% reactionWheel
+    %       3 Axis Reaction Wheels (Object)
+    %
+    %   Created by Manav Jadeja on 20220515
     
     properties
-        stateI              % Initial State Vector
+        state0A             % State Vector (Initial Actual)
+        state0E             % State Vector (Initial Estimate)
         
-        inertia             % Inertia Tensor
-        maxMoment           % Maximum Moment
-        
+        inertiaA            % Inertia Matrix (Actual)
+        inertiaE            % Inertia Matrix (Estimate)
+        maxMoment           % Maximum Moment/Torque
+                
         h                   % Handle
     end
     
     methods
-        function obj = reactionWheel(stateI, inertia, maxMoment)
+        function obj = reactionWheel(state0, state0Error, inertiaA, inertiaError, maxMoment)
             %%% reactionWheel
-            %       Constructor
-            obj.stateI = stateI;
+            %       Create a 3 axis reaction wheel
+            obj.state0A = state0;
+            obj.state0E = state0 + state0Error;
             
-            obj.inertia = inertia;
+            obj.inertiaA = inertiaA;
+            obj.inertiaE = inertiaA + inertiaError;
             obj.maxMoment = maxMoment;
         end
     end

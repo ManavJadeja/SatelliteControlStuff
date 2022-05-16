@@ -8,8 +8,8 @@ classdef satelliteModel < handle
         time                % Time Span
         dt                  % Time Step
         
-        stateI              % Initial State Vector
-        stateS              % Simulated State
+        state0              % State Vector (Initial)
+        stateS              % State Vector (Simulated)
         
         powerSystem         % Power System (object)
         attitudeSystem      % Attitude Control System (object)
@@ -29,67 +29,83 @@ classdef satelliteModel < handle
             
             obj.time = time;
             obj.dt = dt;
-            obj.stateI = [
-                attitudeSystem.stateI,...
-                powerSystem.stateI,...
+            
+            obj.state0 = [
+                attitudeSystem.state0,...
+                powerSystem.state0,...
+                1,...
                 0,...
             ];
             % state vector format (update as needed)
-                % 1:4   Satellite Attitude Quaternions
-                % 5:7   Satellite Attitude Angular Velocities
-                % 8:10  Reaction Wheel Angular Velocities
-                % 11    Battery State of Charge (SOC)
-            obj.stateS = zeros(length(time), length(obj.stateI));
-        end
-        
-        function [dState] = satelliteSystemDynamics(obj, t, dt, state, a, command)
-            %%% satelliteSystemDynamics
-            %       Combines all subsystems dynamics into one function
-            % attitudeSystemDynamics(dt, X, qd, obj)
-            % command = commandSystem.command(t, obj.commandSystem, obj.powerSystem);
-            
-            %{
-            disp('IN SAT MODEL')
-            disp('OBJ')
-            disp(obj)
-            disp('TIME')
-            disp(t)
-            disp('DT')
-            disp(dt)
-            disp('STATE')
-            disp(state)
-            disp('INDEX')
-            disp(a)
-            disp('COMMAND')
-            disp(command)
-            %}
-
-            dState = zeros(1,length(state));
-
-            % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd)
-            dState(1:10) = attitudeSystemDynamics(obj.attitudeSystem, t, dt, state(1:10), a, obj.attitudeSystem.qd(a, :, command));
-
-            %%% NEEDS TO BE IN A FORM THAT RK4 CAN USE
+                % 1:4       SC Attitude Quaternion (Actual)
+                % 5:7       SC Attitude Angular Velocity (Actual)
+                % 8:10      Reaction Wheel Angular Velocity (Actual)
+                % 11:14     SC Attitude Quaternion (Estimate)
+                % 15:17     SC Attitude Angular Velocity (Estimate)
+                % 18:20     Reaction Wheel Angular Velocity (Estimate)
+                
+                % 21        Battery State of Charge (SOC)
+                % 22        Command
+                % 23        Data Storage Use
+                
+            obj.stateS = zeros(length(time), length(obj.state0));
+            obj.stateS(1,:) = obj.state0;
         end
         
         function [] = simulate(obj)
             %%% simulate
             %       Simulation for satellite model
             
-            %%% FIRST STEP
+            %%% PRELIMINARY STUFF
+            % WAITING BAR
             f = waitbar(0,'Simulating...', 'Name', 'Simulation Progress');
-            obj.stateS(1,:) = obj.stateI;
+            
+            % VARIABLES
+            ssdCapacity = obj.commandSystem.ssd.capacity;
+            scIA = obj.attitudeSystem.inertiaA;
+            scIE = obj.attitudeSystem.inertiaE;
+            rwIA = obj.attitudeSystem.reactionWheel.inertiaA;
+            rwIE = obj.attitudeSystem.reactionWheel.inertiaE;
             
             
             %%% SIMULATION LOOP
-            % [X] = RK4(dynamics, t, dt, X, varargin)
-
+                % state vector format (update as needed)
+                    % 1:4       SC Attitude Quaternion (Actual)
+                    % 5:7       SC Attitude Angular Velocity (Actual)
+                    % 8:10      Reaction Wheel Angular Velocity (Actual)
+                    
+                    % 11:14     SC Attitude Quaternion (Estimate)
+                    % 15:17     SC Attitude Angular Velocity (Estimate)
+                    % 18:20     Reaction Wheel Angular Velocity (Estimate)
+                    
+                    % 21        Battery State of Charge (SOC)
+                    % 22        Command
+                    % 23        Data Storage Use
+            
             for a = 1:length(obj.time)-1
-                command = obj.commandSystem.command(obj.powerSystem, a);
-                obj.stateS(a+1,1:10) = RK4(@obj.satelliteSystemDynamics, obj.time(a), obj.dt, obj.stateS(a,1:10), a, command);
-                obj.stateS(a+1,11) = obj.powerSystem.step(obj.dt, command);
-                obj.stateS(a+1,12) = command;
-
+                % Command System
+                command = obj.commandSystem.command(obj.stateS(a,21),...
+                    obj.stateS(a,22)/ssdCapacity, a);
+                obj.stateS(a+1,22) = command;
+                obj.stateS(a+1,23) = obj.stateS(a,23) + obj.dt*...
+                    obj.commandSystem.ssd.dataGenerationRates(command*(command<=4) + 5*(command>4));
+                
+                % Simulate Power System
+                obj.stateS(a+1,21) = obj.powerSystem.step(obj.dt, command);
+                
+                % Actual Attitude Dynamics
+                  % [X] = RK4(dynamics, obj, t, dt, X, varargin)
+                  % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd, scI, rwI)
+                obj.stateS(a+1, 1:10) = RK4(@attitudeSystemDynamics, obj.attitudeSystem,...
+                    obj.time(a), obj.dt, obj.stateS(a, 1:10), a, obj.attitudeSystem.qd(a, :, command),...
+                    scIA, rwIA);
+                
+                % Estimated Attitude Dynamics
+                obj.stateS(a+1,11:20) = RK4(@attitudeSystemDynamics, obj.attitudeSystem,...
+                    obj.time(a), obj.dt, obj.stateS(a,11:20), a, obj.attitudeSystem.qd(a, :, command),...
+                    scIE, rwIE);
+                
+                % Update Loading Bar
                 if rem(a,1000) == 0
                     percentDone = a/(length(obj.time));
                     waitbar(percentDone, f, sprintf('%.2f', 100*percentDone))

@@ -25,6 +25,4 @@ satBField = [
     cell2mat(satBDP.DataSets.GetDataSetByName('B Field - ECF z').GetValues),...
 ];
 
-
 end
-

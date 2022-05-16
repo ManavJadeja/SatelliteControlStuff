@@ -1,8 +1,6 @@
 function [facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax, fsElmin, fsElmax)
 %%% FACILITY INFORMATION
 %   Information for Facility (object) in Systems Tool Kit
-%       1) Input Parameters
-%       2) Definitions derived from Parameters
 %
 %   PARAMETERS
 %       fName           Facility Name (char array: name)
@@ -31,7 +29,7 @@ facility = root.CurrentScenario.Children.New('eFacility', fName);
 facility.Position.AssignGeodetic(fLocation(1), fLocation(2), fLocation(3));
 facility.Graphics.Color = rgb2StkColor(fColor);
 
-disp("Created: Facility")
+disp('Created: Facility')
 
 % FACILITY SENSOR (OBJECT)
 fSensor = facility.Children.New('eSensor', fsName);
@@ -57,7 +55,6 @@ fSensor.Graphics.Projection.UseConstraints = true;
 fSensor.Graphics.Projection.EnableConstraint('ElevationAngle');
 fSensor.Graphics.Projection.UseConstraints = true;
 
-disp("Created: Facility Sensor")
-
+disp('Created: Facility Sensor')
 
 end

@@ -19,7 +19,7 @@ function [accessBools, accessQuaternions] = getAccessQuaternions(root, scenario,
 %
 
 %%% SETUP
-% INTIALIZE MATRICES
+% INITIALIZE MATRICES
 count = length(timeVector);
 accessBools = false(count,1);
 accessQuaternions = zeros(count,4);

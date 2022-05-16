@@ -5,28 +5,40 @@ classdef commandSystem < handle
     %   Created by Manav Jadeja on 20220103
     
     properties
+        time                    % Time
+        
         socSafe                 % State of Charge (safe for access)
         socUnsafe               % State of Charge (unsafe for access)
+        ssdSafe                 % SSD Capacity (safe for experiment)
         
         sunBools                % Sun Bools
         accessBools             % Access Bools
 
-        stateS                  % Simulated State (commands)
+        ssd                     % SSD (Object)
+        
+        state0                  % Initial State
+                                    % 1     Commands
+                                    % 2     Data storage use
     end
     
     methods
-        function obj = commandSystem(socSafe, socUnsafe, sunBools, accessBools)
+        function obj = commandSystem(socSafe, socUnsafe, ssdSafe, sunBools, accessBools, ssd)
             %%% commandSystem
             %       Create a Command System
-            
+                        
             obj.socSafe = socSafe;
             obj.socUnsafe = socUnsafe;
+            obj.ssdSafe = ssdSafe;
             
             obj.sunBools = sunBools;
             obj.accessBools = accessBools;
+            
+            obj.ssd = ssd;
+            
+            obj.state0 = [1,obj.ssd.state0];
         end
         
-        function [command] = command(obj, powerSystem, t)
+        function [command] = command(obj, batterySOC, ssdSOC, a)
             %%% command
             %       Takes in some data and returns a command
             %   INPUTS:
@@ -44,10 +56,10 @@ classdef commandSystem < handle
             %                           % N+4: Access Location N
             
             %%% CURRENT BOOLEANS
-            socSafeBool = logical(powerSystem.battery.soc >= obj.socSafe);
-            socUnsafeBool = logical(powerSystem.battery.soc <= obj.socUnsafe);
-            sunBoolT = obj.sunBools(t);
-            accessBoolsT = obj.accessBools(t,:);
+            socSafeBool = logical(batterySOC >= obj.socSafe);
+            socUnsafeBool = logical(batterySOC <= obj.socUnsafe);
+            sunBoolT = obj.sunBools(a);
+            accessBoolsT = obj.accessBools(a,:);
             
             %%% COMMAND GENERATION
             % See flow diagram at the following link
@@ -75,13 +87,29 @@ classdef commandSystem < handle
                             command = 1;
                         end
                     else
-                        command = 3;
+                        if sunBoolT
+                            command = 4;
+                        else
+                            if ssdSOC < obj.ssdSafe
+                                command = 3;
+                            end
+                        end
                     end
                 end
             end
-
-            obj.stateS(t) = command;
-
+        end
+        
+        function [dataGen] = dataGenerated(obj, dt, state, command)
+            dataGen = obj.ssd.dataGenerationRates(command*(command<=4) + 5*(command>4));
+            if dataGen > 0
+                if obj.ssd.capacity < state + dt*dataGen
+                    dataGen = 0;
+                end
+            else
+                if state + dt*dataGen < 0
+                    dataGen = 0;
+                end
+            end
         end
     end
 end

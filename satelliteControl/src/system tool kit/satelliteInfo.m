@@ -1,8 +1,6 @@
 function [satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sAN, sL, sColor, sModel, ssName, ssCHA, ssRmin, ssRmax)
 %%% SATELLITE INFORMATION
 %   Information for Satellite (object) in Systems Tool Kit
-%       1) Input Parameters
-%       2) Definitions derived from Parameters
 %
 %   PARAMETERS
 %       sName                   Satellite Name (char array: name)
@@ -16,7 +14,7 @@ function [satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sA
 %
 %       ssName                  Satellite Sensor Name (char array: name)
 %       ssCHA                   Satellite Sensor Cone Half Angle
-%                                   (double: degrees)
+%                                   (double: deg)
 %       ssRmin                  Satellite Sensor Range Min (double: km)
 %       ssRmax                  Satellite Sensor Range Max (double: km)
 %
@@ -46,7 +44,7 @@ keplerian.Location.Value = sL;
 satellite.Propagator.InitialState.Representation.Assign(keplerian);
 satellite.Propagator.Propagate;
 
-disp("Created: Satellite")
+disp('Created: Satellite')
 
 % Satellite Graphics
 satellite.VO.Model.ModelData.Filename = sModel;
@@ -59,7 +57,7 @@ attributes = graphics.Attributes;
 attributes.Inherit = false;
 attributes.Color = rgb2StkColor(sColor);
 
-disp("Updated: Satellite Model")
+disp('Updated: Satellite Model')
 
 
 %%% SATELLITE SENSOR (OBJECT)
@@ -68,7 +66,7 @@ sSensor = satellite.Children.New('eSensor', ssName);
 
 %%% SATELLITE SENSOR PROPERTIES
 sSensor.CommonTasks.SetPatternSimpleConic(ssCHA, 1);
-sSensor.CommonTasks.SetPointingAlongVector('Satellite/SPICESat Body.X', 'Satellite/SPICESat North', 0);
+sSensor.CommonTasks.SetPointingAlongVector(['Satellite/', sName, ' Body.X'], ['Satellite/', sName, ' North'], 0);
 
 ssRange = sSensor.AccessConstraints.AddConstraint('eCstrRange');
 ssRange.EnableMin = true;
@@ -80,7 +78,6 @@ sSensor.Graphics.Projection.UseConstraints = true;
 sSensor.Graphics.Projection.UseDistance = true;
 sSensor.Graphics.Projection.DistanceType = 'eRangeConstraint';
 
-disp("Created: Satellite Sensor")
-
+disp('Created: Satellite Sensor')
 
 end

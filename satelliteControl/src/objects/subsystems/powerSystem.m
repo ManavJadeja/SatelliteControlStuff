@@ -6,7 +6,7 @@ classdef powerSystem < handle
     
     properties
         time                % Time Vector
-        stateI              % Initial State Vector
+        state0              % Initial State Vector
         
         battery             % Battery (object)
         batteryVoltage      % Voltage of battery (vector)
@@ -37,9 +37,9 @@ classdef powerSystem < handle
             obj.dischargingSoc = transpose([batteryData.battDchgRows.dSOC]);
             obj.solarArray = solarArray;
             obj.electricalSystem = electricalSystem;
-            obj.stateI = obj.battery.soc;
+            obj.state0 = obj.battery.soc;
 
-            obj.batteryVoltage = obj.chargingVoltage(binarySearch(obj.chargingSoc, obj.stateI));
+            obj.batteryVoltage = obj.chargingVoltage(binarySearch(obj.chargingSoc, obj.state0));
         end
 
         function [soc] = step(obj, dt, command)
@@ -77,7 +77,7 @@ classdef powerSystem < handle
 
             %%% Voltage data 
             if batteryCurrent > 0
-                voltageCharge = obj.chargingVoltage(binarySearch(obj.chargingSoc, obj.stateI));
+                voltageCharge = obj.chargingVoltage(binarySearch(obj.chargingSoc, obj.state0));
 
                 batteryCurrent = min(batteryCurrent, obj.battery.maxI);
 
@@ -89,7 +89,7 @@ classdef powerSystem < handle
                 %end
 
             else
-                voltageDischarge = obj.dischargingVoltage(binarySearch(obj.dischargingSoc, obj.stateI));
+                voltageDischarge = obj.dischargingVoltage(binarySearch(obj.dischargingSoc, obj.state0));
 
                 obj.batteryVoltage = voltageDischarge + obj.battery.R_discharge * batteryCurrent;
 
@@ -98,8 +98,8 @@ classdef powerSystem < handle
             % Compute change in the charge of the battery
             ahrChange = batteryCurrent * dt / 60 / 60;
             % Return the new SOC, clamped between 0 and 1
-            soc = min(1, max(0, obj.stateI + ahrChange / obj.battery.capacity));
-            obj.stateI = soc;
+            soc = min(1, max(0, obj.state0 + ahrChange / obj.battery.capacity));
+            obj.state0 = soc;
 
         end
     end
