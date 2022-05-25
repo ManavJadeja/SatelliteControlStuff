@@ -1,5 +1,7 @@
 disp('Plotting:')
 
-plotAttitudeSim(satelliteModel, dt);
-plotPowerSim(satelliteModel, dt)
-plotCommandSim(satelliteModel, dt)
+f = figure('Name', 'Plots', 'Position', [100 100 900 700]);
+tabgp = uitabgroup(f, 'Position', [0.01,0.01, 0.]);
+%plotAttitudeSim(satelliteModel, dt);
+%plotPowerSim(satelliteModel, dt)
+%plotCommandSim(satelliteModel, dt)

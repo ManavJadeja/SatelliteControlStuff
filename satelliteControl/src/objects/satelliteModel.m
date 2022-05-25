@@ -87,23 +87,32 @@ classdef satelliteModel < handle
                 command = obj.commandSystem.command(obj.stateS(a,21),...
                     obj.stateS(a,22)/ssdCapacity, a);
                 obj.stateS(a+1,22) = command;
-                obj.stateS(a+1,23) = obj.stateS(a,23) + obj.dt*...
-                    obj.commandSystem.ssd.dataGenerationRates(command*(command<=4) + 5*(command>4));
-                
+                obj.stateS(a+1,23) = obj.stateS(a,23) + ...
+                    obj.commandSystem.dataGenerated(obj.dt, obj.stateS(a,23), command);
+                    
                 % Simulate Power System
                 obj.stateS(a+1,21) = obj.powerSystem.step(obj.dt, command);
                 
+                % Control Torque
+                Mc = obj.attitudeSystem.reactionWheel.controlTorque(...
+                    obj.stateS(a, 11:14), obj.stateS(a, 15:17),...
+                    obj.attitudeSystem.K,...
+                    obj.attitudeSystem.qd(a, :, command));
+                
+                % MAGNETIC DISTURBANCE TORQUE
+                %{
+                Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
+                    1e-9*obj.magnetorquer.magneticField(a,:), q);
+                %}
+                
                 % Actual Attitude Dynamics
-                  % [X] = RK4(dynamics, obj, t, dt, X, varargin)
-                  % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd, scI, rwI)
+                % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, scI, rwI, M)
                 obj.stateS(a+1, 1:10) = RK4(@attitudeSystemDynamics, obj.attitudeSystem,...
-                    obj.time(a), obj.dt, obj.stateS(a, 1:10), a, obj.attitudeSystem.qd(a, :, command),...
-                    scIA, rwIA);
+                    obj.time(a), obj.dt, obj.stateS(a, 1:10), a, scIA, rwIA, Mc);
                 
                 % Estimated Attitude Dynamics
                 obj.stateS(a+1,11:20) = RK4(@attitudeSystemDynamics, obj.attitudeSystem,...
-                    obj.time(a), obj.dt, obj.stateS(a,11:20), a, obj.attitudeSystem.qd(a, :, command),...
-                    scIE, rwIE);
+                    obj.time(a), obj.dt, obj.stateS(a,11:20), a, scIE, rwIE, Mc);
                 
                 % Update Loading Bar
                 if rem(a,1000) == 0

@@ -19,7 +19,8 @@ disp("Started: Systems Tool Kit")
 %{
 [scenario, timeVector, dt] = scenarioInfo(root, scenName, scenStartTime, scenStopTime, dt);
 [facility, fSensor] = facilityInfo(root, fName, fLocation, fColor, fsName, fsCHA, fsRmin, fsRmax, fsElmin, fsElmax)
-[satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sAN, sL, sColor, sModel, ssName, ssCHA, ssRmin, ssRmax)
+[satellite, sSensor] = satelliteInfo(root, sName, sSMA, sE, sI, sAP, sAN, sL, sColor, sModel,...
+    ssName, ssCHA, ssRmin, ssRmax)
 %}
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
@@ -80,4 +81,6 @@ toAttitudeFile = [pwd, '\tmp\attitudeQ.a'];
 satellite.Attitude.External.Load(toAttitudeFile);
 
 
+%%% PLOT RESULTS
+plotEverything;
 disp('DONE')

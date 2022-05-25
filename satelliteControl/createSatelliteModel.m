@@ -64,10 +64,10 @@ POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYST
 % COMMAND SYSTEM
 %{
 obj = ssd(capacity, nothingDataGen, safetyDataGen, experimentDataGen, chargingDataGen, communicationDataGen, state0)
-obj = commandSystem(socSafe, socUnsafe, ssdSafe, sunBools, accessBools, ssd)
+obj = commandSystem(socSafe, socUnsafe, ssdSafe, expDuration, dt, sunBools, accessBools, ssd)
 %}
 SSD = ssd(100, 0.0002, 0.0002, 0.0002+0.003+0.177, 0.0002, -0.5, 0);
-COMMANDSYSTEM = commandSystem(0.75, 0.5, 0.90, sunBools, accessBools, SSD);
+COMMANDSYSTEM = commandSystem(0.75, 0.5, 0.90, 600, dt, sunBools, accessBools, SSD);
 
 % ATTITUDE SYSTEM
 %{
@@ -76,8 +76,8 @@ obj = reactionWheel(state0, state0Error, inertiaA, inertiaError, maxMoment)
 obj = attitudeSystem(state0, state0Error, qd, inertiaA, inertiaError, K, magnetorquer, reactionWheel)
 %}
 MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
-REACTIONWHEEL = reactionWheel([100,100,100], [0,0,0],...
-    diag(5.6e-6*[1 1 1]), [0,0,0], 6e-4);
+REACTIONWHEEL = reactionWheel([1000,1000,1000], [0,0,0],...
+    diag(5.6e-6*[1 1 1]), [0,0,0], 7e-3);
 ATTITUDESYSTEM = attitudeSystem([1,0,0,0,0,0,0], [0,0,0,0,0,0,0], qd,...
     1e-2*diag([5,10,13]), [0,0,0], [1,1], MAGNETORQUER, REACTIONWHEEL);
 

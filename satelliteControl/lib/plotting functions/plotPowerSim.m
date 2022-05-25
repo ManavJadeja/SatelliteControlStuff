@@ -1,13 +1,16 @@
-function [] = plotPowerSim(satelliteModel, dt)
+function [] = plotPowerSim(ax, satelliteModel, timeHours)
 
-disp('Plotting: Power Simulation')
+%%% SETUP
+% TABS IN ATTITUDE SIM
+powerTabgp = uitabgroup(ax, 'Position', [0.01,0.01, 0.99, 0.99]);
 
-% PRELIMINARY
-timeHours = (1:length(satelliteModel.time)) * dt / 60 / 60;
 
-% BATTERY
-figure('Name', 'Power Simulation', 'Position', [100 100 900 700])
-plot(timeHours, satelliteModel.stateS(:,21))
+%%% POWER SIMULATION
+powerTab = uitab(powerTabgp,'Title','Power Simulation');
+powerTabAxes = axes(powerTab);
+title('Power Simulation')
+
+plot(powerTabAxes, timeHours, satelliteModel.stateS(:,21))
 xlim([0 timeHours(end)])
 ylim([-0.1 1.1])
 title('Battery SOC')

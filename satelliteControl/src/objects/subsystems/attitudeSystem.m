@@ -55,84 +55,35 @@ classdef attitudeSystem < handle
             obj.qd = qd;
         end
         
-        function [dX] = attitudeSystemDynamics(obj, t, dt, X, a, qd, scI, rwI)
-            % k1 = dt*dynamics(t,          dt, X,          varargin{:});
+        function [dX] = attitudeSystemDynamics(obj, t, dt, X, a, scI, rwI, M)
             %%% attitudeSystemDynamics
             %       Attitude Control System Dynamics
             %   INPUTS:
+            %       obj         attitudeSystem (obj)
+            %       t           Current Time
             %       dt          Time Step
             %       X           State Vector
-            %       qd          Quaternions (desired)
-            %       obj         attitudeSystem (obj)
+            %       a           Current Index
+            %       scI         SC Inertia
+            %       rwI         RW Inertia
+            %       M           External + Internal Moments
             %   OUTPUTS:
             %       dX          State Vector Derivative
             
             %%% SETUP
-            %{
-            disp('IN DYNAMICS')
-            disp('TIME')
-            disp(t)
-            disp('DT')
-            disp(dt)
-            disp('STATE')
-            disp(X)
-            disp('INDEX')
-            disp(a)
-            disp('QD')
-            disp(qd)
-            disp('OBJ')
-            disp(obj)
-            %}
-            
             q = X(1:4);
             w = X(5:7);
             W = X(8:10);
             
-            %%% TORQUES
-            % MAGNETIC DISTURBANCE TORQUE
-            %{
-            Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
-                1e-9*obj.magnetorquer.magneticField(a,:), q);
-            %}
-            
-            % CONTROL TORQUE
-            Mc = quatEMc(obj, q, w, obj.K, qd);
-            if norm(Mc) > obj.reactionWheel.maxMoment
-                direction = Mc/norm(Mc);
-                Mc = obj.reactionWheel.maxMoment*direction;
-            end
-
-            % TOTAL TORQUE
-            M = Mc'; % No Mm term for now;
-
             % KINEMATICS
             % Satellite Motion
             dq = -qp(obj, [0,w], q)/2;
-            dw = scI\(-1*cpm(obj, w)*scI*(w') + M);
+            dw = scI\(-1*cpm(obj, w)*scI*(w') + M');
             % Reaction Wheel Motion
-            dW = rwI\(-1*cpm(obj, W)*rwI*(W') - M);
+            dW = rwI\(-1*cpm(obj, W)*rwI*(W') - M');
             
             %%% OUTPUT
             dX = [dq, dw', dW'];
-        end
-        
-        function [Mc] = quatEMc(obj, q, w, K, qd)
-            %%% quatEMc
-            %       Control Moment from Quaternion Error
-            %   INPUTS:
-            %       q           Quaternion (current)
-            %       w           Angular Velocity (current)
-            %       K           Quaternion Controller Gains
-            %       qd          Quaternion (desired)
-            %   OUTPUTS:
-            %       Mc          Control Moment
-
-            %%% COMPUTE CONTROL MOMENT
-            % QUATERNION ERROR
-            qErr = qp(obj, qd, [q(1), -q(2), -q(3), -q(4)]);
-            
-            % CONTROL MOMENT
-            Mc = -K(1)*qErr(2:4) -K(2)*w;
         end
         
         function [pq] = qp(obj, p, q)
