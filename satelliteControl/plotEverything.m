@@ -51,8 +51,6 @@ function startTimeSliderCallback(slider1, eventData, slider2, dt,...
 startIndex = get(slider1, 'Value');
 lengthIndex = get(slider2, 'Value');
 
-disp([startIndex startIndex+lengthIndex].*dt/60/60)
-
 attFn = fieldnames(attHandles);
 for a = 1:numel(attFn)
     set(attHandles.(attFn{a}), 'XLim', [startIndex startIndex+lengthIndex].*dt/60/60)
@@ -75,8 +73,6 @@ function lengthTimeSliderCallback(slider1, eventData, slider2, dt,...
     attHandles, powHandles, comHandles) %#ok<INUSL>
 lengthIndex = get(slider1, 'Value');
 startIndex = get(slider2, 'Value');
-
-disp([startIndex startIndex+lengthIndex].*dt/60/60)
 
 attFn = fieldnames(attHandles);
 for a = 1:numel(attFn)

@@ -82,7 +82,7 @@ satellite.Attitude.External.Load(toAttitudeFile);
 
 
 %%% PLOT RESULTS
-%plotEverything;
+plotEverything;
 
 
 disp('DONE')
