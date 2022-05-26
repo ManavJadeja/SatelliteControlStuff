@@ -79,7 +79,7 @@ MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 REACTIONWHEEL = reactionWheel([1000,1000,1000], [0,0,0],...
     diag(5.6e-6*[1 1 1]), [0,0,0], 7e-3);
 ATTITUDESYSTEM = attitudeSystem([1,0,0,0,0,0,0], [0,0,0,0,0,0,0], qd,...
-    1e-2*diag([5,10,13]), [0,0,0], [1,1], MAGNETORQUER, REACTIONWHEEL);
+    1e-2*diag([5,10,13]), 1e-6*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL);
 
 % SATELLITE MODEL
 %{

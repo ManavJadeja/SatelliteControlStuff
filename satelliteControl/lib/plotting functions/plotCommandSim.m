@@ -1,23 +1,26 @@
-function [] = plotCommandSim(ax, satelliteModel, timeHours)
+function [commandHandles] = plotCommandSim(ax, satelliteModel, timeHours, startTime, lengthTime)
 
 %%% SETUP
 % TABS IN ATTITUDE SIM
 commandTabgp = uitabgroup(ax, 'Position', [0.01,0.01, 0.99, 0.99]);
 
+% PRELIMINARY INFORMATION
+dt = satelliteModel.dt;
+
 
 %%% COMMANDS
 commandTab = uitab(commandTabgp,'Title','Commands');
 commandAxes = axes(commandTab);
-title('Spacecraft Commands')
 
-plot(commandAxes, timeHours, satelliteModel.stateS(:,22))
-xlim([0 timeHours(end)])
+plot(commandAxes, timeHours(startTime:lengthTime),...
+    satelliteModel.stateS(startTime:lengthTime,22))
+xlim([startTime startTime+lengthTime]*dt/60/60)
 ylim([0 8])
 yticklabels({'', 'Nothing Mode','Safety Mode','Experiment Mode',...
     'Charging Mode','Access 1','Access 2','Access 3'})
 xlabel('Time (hours)')
 ylabel('Command')
-
+commandHandles.commands = gca;
 % Command (integer)
     % 1: Nothing Mode
     % 2: Safety Mode
@@ -30,14 +33,14 @@ ylabel('Command')
 %%% DATA STORAGE
 dataTab = uitab(commandTabgp,'Title','Data Storage');
 dataAxes = axes(dataTab);
-title('Data Storage')
 
-plot(dataAxes, timeHours, satelliteModel.stateS(:,23)./satelliteModel.commandSystem.ssd.capacity)
-xlim([0 timeHours(end)])
+plot(dataAxes, timeHours(startTime:lengthTime),...
+    satelliteModel.stateS(startTime:lengthTime,23)./satelliteModel.commandSystem.ssd.capacity)
+xlim([startTime startTime+lengthTime]*dt/60/60)
 ylim([-0.1 1.1])
 title('Data Storage')
 xlabel('Time (hours)')
 ylabel('Percent Filled')
-
+commandHandles.data = gca;
 
 end

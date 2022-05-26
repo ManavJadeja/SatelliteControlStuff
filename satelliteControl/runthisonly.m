@@ -24,7 +24,7 @@ disp("Started: Systems Tool Kit")
 %}
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
-    '24 Dec 2021 00:00:00.000', '24 Dec 2021 06:00:00.000', 0.01);
+    '24 Dec 2021 01:30:00.000', '24 Dec 2021 02:30:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
 [facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [255 0 0],...
@@ -82,5 +82,7 @@ satellite.Attitude.External.Load(toAttitudeFile);
 
 
 %%% PLOT RESULTS
-plotEverything;
+%plotEverything;
+
+
 disp('DONE')
