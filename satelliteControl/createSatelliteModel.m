@@ -58,7 +58,7 @@ batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony H
 BATTERY = battery(6.8, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(0.06, [1,0,0], 1);
-ELECTRICALSYSTEM = electricalSystem(1, 0.3, 10, 0.3, 5);
+ELECTRICALSYSTEM = electricalSystem(0.5, 0.3, 5, 0.3, 5);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
 
 % COMMAND SYSTEM
@@ -79,7 +79,7 @@ MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 REACTIONWHEEL = reactionWheel([1000,1000,1000], [0,0,0],...
     diag(5.6e-6*[1 1 1]), [0,0,0], 7e-3);
 ATTITUDESYSTEM = attitudeSystem([1,0,0,0,0,0,0], [0,0,0,0,0,0,0], qd,...
-    1e-2*diag([5,10,13]), 1e-6*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL);
+    1e-2*diag([5,10,13]), 1e-4*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL);
 
 % SATELLITE MODEL
 %{
