@@ -24,7 +24,7 @@ disp("Started: Systems Tool Kit")
 %}
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
-    '24 Dec 2021 00:00:00.000', '24 Dec 2021 06:00:00.000', 0.01);
+    '24 Dec 2021 01:00:00.000', '24 Dec 2021 03:00:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
 [facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [255 0 0],...

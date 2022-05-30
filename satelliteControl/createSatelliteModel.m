@@ -55,7 +55,7 @@ obj = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, experimentLoadCurr
 obj = powerSystem(time, battery, batteryData, solarArray, electricalSystem)
 %}
 batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
-BATTERY = battery(6.8, 0.75, 0.01, 0.01, 33.6, 40, 8, 0);
+BATTERY = battery(6.8, 0.85, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
 SOLARARRAY = solarArray(0.06, [1,0,0], 1);
 ELECTRICALSYSTEM = electricalSystem(0.5, 0.3, 5, 0.3, 5);
