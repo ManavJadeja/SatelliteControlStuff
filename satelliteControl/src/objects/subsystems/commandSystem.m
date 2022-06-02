@@ -117,14 +117,9 @@ classdef commandSystem < handle
             
             % Setup
             intervalNeeded = expDuration/dt;
-            %openBools = false(1,length(sunBools));
             
             % Find empty times
             openBools = any([accessBools,sunBools]);
-            %for a = 1:size(accessBools, 2)
-            %    opensBools = openBools|accessBools(:,a);
-            %end
-            %openBools = openBools|sunBools;
             
             % Find All Free Intervals
             obj.expBools = false(1,length(sunBools));
@@ -143,6 +138,7 @@ classdef commandSystem < handle
         function [dataGen] = dataGenerated(obj, dt, state, command)
             %%% dataGenerated
             %       Get data generated from a command
+            
             dataGen = dt*obj.ssd.dataGenerationRates(command*(command<=4) + 5*(command>4));
             nextState = state + dataGen;
             if nextState > obj.ssd.capacity || nextState < 0

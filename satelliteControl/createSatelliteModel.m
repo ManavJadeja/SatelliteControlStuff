@@ -73,13 +73,16 @@ COMMANDSYSTEM = commandSystem(0.75, 0.5, 0.90, 600, dt, sunBools, accessBools, S
 %{
 obj = magnetorquer(dipoleMagnitude, direction, magneticField)
 obj = reactionWheel(state0, state0Error, inertiaA, inertiaError, maxMoment)
-obj = attitudeSystem(state0, state0Error, qd, inertiaA, inertiaError, K, magnetorquer, reactionWheel)
+obj = attitudeSystem(state0, state0Error, qd, inertiaA, inertiaError, K,...
+        magnetorquer, reactionWheel, starTracker)
+obj = starTracker(oneSigma, meanError, offset)
 %}
 MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 REACTIONWHEEL = reactionWheel([1000,1000,1000], [0,0,0],...
     diag(5.6e-6*[1 1 1]), [0,0,0], 7e-3);
+STARTRACKER = starTracker(6e-5, 6e-5, [0,0,0,0]);
 ATTITUDESYSTEM = attitudeSystem([1,0,0,0,0,0,0], [0,0,0,0,0,0,0], qd,...
-    1e-2*diag([5,10,13]), 1e-4*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL);
+    1e-2*diag([5,10,13]), 1e-4*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL, STARTRACKER);
 
 % SATELLITE MODEL
 %{

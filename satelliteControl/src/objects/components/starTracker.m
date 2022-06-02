@@ -5,36 +5,40 @@ classdef starTracker < handle
     %   Created by Manav Jadeja on 20220519
     
     properties
-        pixelsLength
-        starsTracked
-        kcentroid
-        
-        tempError
+        oneSigma
+        offset
         
         h
     end
     
     methods
-        function obj = starTracker(tempError, starsTracked, kcentroid)
+        function obj = starTracker(oneSigma, offset)
             %%% starTracker
             %       Create a star tracker
-            obj.tempError = tempError;
-            obj.starsTracked = starsTracked;
-            obj.kcentroid = kcentroid;
+            
+            obj.oneSigma = oneSigma;
+            obj.offset = offset;
         end
         
-        function [qEstimate] = lostAttitudeAcquisition(obj, qActual)
-            %%% lostAttitudeAcquisition
-            %   	Lost Mode (Initial) Attitude Acquisition
+        function [qEstimate] = perfectAttitudeAcquisition(obj, qActual)
+            %%% perfectAttitudeAcquisition
+            %   	Perfect Attitude Acquisition
             
-            qEstimate = 1;
+            qEstimate = qActual;
         end
         
-        function [qEstimate] = trackingAttitudeAcquisitions(obj, qActual, qEstimate)
-            %%% trackingAttitudeAcquisitions
-            %       Tracking Mode (Continuous) Attitude Acquisition
+        function [qEstimate] = onesigmaAttitudeAcquisition(obj, qActual)
+            %%% onesigmaAttitudeAcquisitions
+            %       One Sigma Error Attitude Acquisition
             
-            qEstimate = 1;
+            qEstimate = qActual + obj.oneSigma*randn(1,4);
+        end
+        
+        function [qEstimate] = offsetAttitudeAcquisition(obj, qActual)
+            %%% offsetAttitudeAcquisition
+            %       Offset Error Attitude Acquisition
+            
+            qEstimate = qActual + obj.offset;
         end
         
     end

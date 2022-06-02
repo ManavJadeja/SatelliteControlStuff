@@ -101,9 +101,14 @@ classdef satelliteModel < handle
                 
                 % MAGNETIC DISTURBANCE TORQUE
                 %{
-                Mm = obj.magnetorquer.magneticMoment(obj.magnetorquer.magneticDipole,...
-                    1e-9*obj.magnetorquer.magneticField(a,:), q);
+                Mm = obj.attitudeSystem.magnetorquer.magneticMoment(1e-9*obj.magnetorquer.magneticField(a,:), q);
                 %}
+                
+                % Attitude Determination
+                obj.stateS(a,11:14) = obj.attitudeSystem.starTracker.onesigmaAttitudeAcquisition(obj.stateS(a,1:4));
+                % [qEstimate] = perfectAttitudeAcquisition(qActual)
+                % [qEstimate] = onesigmaAttitudeAcquisition(qActual)
+                % [qEstimate] = offsetAttitudeAcquisition(qActual)
                 
                 % Actual Attitude Dynamics
                 % [dX] = attitudeSystemDynamics(obj, t, dt, X, a, scI, rwI, M)

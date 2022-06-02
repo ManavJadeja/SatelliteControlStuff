@@ -6,7 +6,8 @@ classdef ssd < handle
     
     properties
         capacity                % Capacity in MB (megabytes)
-        
+        state0                  % Initial State Vector (% full)
+
         dataGenerationRates     % Data Generation Rate (MB/s)
             % BASED ON COMMAND SYSTEM
             % 1: Nothing Mode
@@ -14,9 +15,7 @@ classdef ssd < handle
             % 3: Experiment Mode
             % 4: Charging Mode
             % 5: Communication Mode
-                
-        state0                  % Initial State Vector (% full)
-        
+            
         h
     end
     

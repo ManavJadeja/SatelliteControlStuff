@@ -20,6 +20,7 @@ classdef attitudeSystem < handle
         
         magnetorquer        % Magnetorquer (object)
         reactionWheel       % Reaction Wheel (object)
+        starTracker         % Star Tracker (object)
         
         qd                  % Desired Attitude Quaternions
                                 % 1: Nothing Mode
@@ -34,7 +35,7 @@ classdef attitudeSystem < handle
     
     methods
         function obj = attitudeSystem(state0, state0Error, qd, inertiaA, inertiaError, K,...
-                magnetorquer, reactionWheel)
+                magnetorquer, reactionWheel, starTracker)
             %%% attitudeSystem
             %       Create an attitude control system
             
@@ -51,6 +52,7 @@ classdef attitudeSystem < handle
             
             obj.magnetorquer = magnetorquer;
             obj.reactionWheel = reactionWheel;
+            obj.starTracker = starTracker;
             
             obj.qd = qd;
         end

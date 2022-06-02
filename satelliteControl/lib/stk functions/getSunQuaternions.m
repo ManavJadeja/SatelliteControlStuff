@@ -54,7 +54,7 @@ try
     % Making Vector and Angle Visible
     vectorSRAxis.Color = 65535;
     angleSRAngle.Color = 65535;
-    vectorSRAxis.Visible = true;
+    vectorSRAxis.Visible = false;
     angleSRAngle.Visible = true;
     angleSRAngle.LabelVisible = true;
     angleSRAngle.AngleValueVisible = true;

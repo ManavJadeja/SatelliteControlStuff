@@ -20,17 +20,17 @@ classdef magnetorquer < handle
             obj.magneticField = magneticField;
         end
         
-        function [Mm] = magneticMoment(obj, m, B, q)
+        function [Mm] = magneticMoment(obj, B, q)
             %%% magneticMoment
             %       Computes Magnetic Moment from current Magnetic Dipole
             %       (rotated with quaternion) and External Magnetic Field
             %   INPUTS:
-            %       m           Magnetic Dipole Vector
             %       B           External Magnetic Field
             %       q           Current Quaternion (orientation)
             %   OUTPUTS:
             %       Mm          Moment caused by Magnetic Dipole and Field
             
+            m = obj.magneticDipole;
             mQ = q*[0;m']*[q(1), -q(2), -q(3), -q(4)];
             Mm = [
                 mQ(2)*B(3) - mQ(3)*B(2),...

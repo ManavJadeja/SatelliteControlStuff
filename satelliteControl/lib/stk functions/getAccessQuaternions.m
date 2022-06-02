@@ -61,7 +61,7 @@ try
     vector.AngleSizeScale = 0.5;
     vectorARAxis.Color = facility.Graphics.Color;
     angleARAngle.Color = facility.Graphics.Color;
-    vectorARAxis.Visible = true;
+    vectorARAxis.Visible = false;
     angleARAngle.Visible = true;
     angleARAngle.LabelVisible = true;
     angleARAngle.AngleValueVisible = true;
