@@ -35,7 +35,7 @@ classdef commandSystem < handle
             
             obj.sunBools = sunBools;
             obj.accessBools = accessBools;
-            experimentModeBools(obj, dt, expDuration, accessBools, sunBools);
+            obj.expBools = experimentModeBools(obj, dt, expDuration, accessBools, sunBools);
             
             obj.ssd = ssd;
             
@@ -108,31 +108,29 @@ classdef commandSystem < handle
             end
         end
         
-        function [] = experimentModeBools(obj, dt, expDuration, accessBools, sunBools)
+        function [expBools] = experimentModeBools(obj, dt, expDuration, accessBools, sunBools)
             %%% experimentModeBool
             %       Find and make experiment bools
-            
-            % Need to parse through accessBools and sunBools to find
-            % windows that are obj.expDuration long (in terms of dt)
             
             % Setup
             intervalNeeded = expDuration/dt;
             
             % Find empty times
-            openBools = any([accessBools,sunBools]);
+            openBools = any([accessBools,sunBools],2);
             
             % Find All Free Intervals
-            obj.expBools = false(1,length(sunBools));
+            expBools = false(1,length(sunBools));
+            size(expBools)
             matchPattern = [1, zeros(1,intervalNeeded)];
-            check = false;
-            while ~check
-                pos = strfind(openBools, matchPattern);
+            check = true;
+            while check
+                pos = strfind(openBools', matchPattern);
                 for a = 1:length(pos)
-                    obj.expBools(a:a+length(intervalNeeded)) = true;
+                    expBools((pos(a)+1):(pos(a)+intervalNeeded)) = true;
+                    openBools((pos(a)+1):(pos(a)+intervalNeeded)) = true;
                 end
-                check = isempty(pos);
+                check = ~isempty(pos);
             end
-            
         end
         
         function [dataGen] = dataGenerated(obj, dt, state, command)

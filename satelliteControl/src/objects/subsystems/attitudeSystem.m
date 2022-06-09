@@ -107,7 +107,7 @@ classdef attitudeSystem < handle
         
         function mat = cpm(obj, vec)
             %%% cpm 
-            %       Computs Standard Cross-Product Matrix from Vector
+            %       Computes Standard Cross-Product Matrix from Vector
             %   INPUTS:
             %       vec         3x1 Vector
             %   OUTPUTS:

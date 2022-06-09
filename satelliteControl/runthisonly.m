@@ -25,7 +25,7 @@ disp("Started: Systems Tool Kit")
 
 % SCENARIO
 [scenario, timeVector, dt] = scenarioInfo(root, 'solid',...
-    '24 Dec 2021 02:00:00.000', '24 Dec 2021 03:00:00.000', 0.01);
+    '24 Dec 2021 03:30:00.000', '24 Dec 2021 05:00:00.000', 0.01);
 
 % FACILITY AND FACILITY SENSOR
 [facility1, fSensor1] = facilityInfo(root, 'rugs', [40.5215 -74.4618 0], [255 0 0],...
@@ -67,7 +67,7 @@ disp(['Created: Satellite Object in MATLAB: ', num2str(toc), ' seconds'])
 
 
 % SIMULATE SYSTEM DYNAMICS
-disp('Simuating: Satellite System Dynamics')
+disp('Simulating: Satellite System Dynamics')
 tic
 satelliteModel.simulate();
 disp(['Simulated: Satellite System Dynamics: ', num2str(toc), ' seconds'])
@@ -82,7 +82,7 @@ toAttitudeFile = [pwd, '\tmp\attitudeQ.a'];
 satellite.Attitude.External.Load(toAttitudeFile);
 
 
-%%% PLOT RESULTS
+%%% PLOT EVERYTHING
 [f] = plotEverything(satelliteModel);
 
 

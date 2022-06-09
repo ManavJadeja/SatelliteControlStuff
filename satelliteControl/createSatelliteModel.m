@@ -41,6 +41,7 @@ disp(['Computed: Magnetic Field: ', num2str(toc), ' seconds'])
     % 6: Access Location 2
     % n+4: Access Location n
 qd = zeros(length(timeVector), 4, 4+length(facilityArray));
+qd(:,1,1:3) = 1;
 qd(:,:,4) = sunQuaternions;     % 4: Charging Mode
 for a = 1:length(facilityArray)
     qd(:,:,a+4) = accessQuaternions(:,:,a);
@@ -55,11 +56,12 @@ obj = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, experimentLoadCurr
 obj = powerSystem(time, battery, batteryData, solarArray, electricalSystem)
 %}
 batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
-BATTERY = battery(6.8, 0.85, 0.01, 0.01, 33.6, 40, 8, 0);
+BATTERY = battery(20, 0.9, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
-SOLARARRAY = solarArray(0.06, [1,0,0], 1);
+SOLARARRAY = solarArray(0.08, [1,0,0], 1);
 ELECTRICALSYSTEM = electricalSystem(0.5, 0.3, 5, 0.3, 5);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
+disp('Created: Power System')
 
 % COMMAND SYSTEM
 %{
@@ -68,6 +70,7 @@ obj = commandSystem(socSafe, socUnsafe, ssdSafe, expDuration, dt, sunBools, acce
 %}
 SSD = ssd(100, 0.0002, 0.0002, 0.0002+0.003+0.177, 0.0002, -0.5, 0);
 COMMANDSYSTEM = commandSystem(0.75, 0.5, 0.90, 600, dt, sunBools, accessBools, SSD);
+disp('Created: Command System')
 
 % ATTITUDE SYSTEM
 %{
@@ -80,16 +83,17 @@ obj = starTracker(oneSigma, meanError, offset)
 MAGNETORQUER = magnetorquer(0.14, [1,0,0], satBField);
 REACTIONWHEEL = reactionWheel([1000,1000,1000], [0,0,0],...
     diag(5.6e-6*[1 1 1]), [0,0,0], 7e-3);
-STARTRACKER = starTracker(6e-5, 6e-5, [0,0,0,0]);
+STARTRACKER = starTracker(6e-5, [0,0,0,0]);
 ATTITUDESYSTEM = attitudeSystem([1,0,0,0,0,0,0], [0,0,0,0,0,0,0], qd,...
-    1e-2*diag([5,10,13]), 1e-4*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL, STARTRACKER);
+    1e-2*diag([5,10,13]), 1e-5*[1,1,1], [1,1], MAGNETORQUER, REACTIONWHEEL, STARTRACKER);
+disp('Created: Attitude System')
 
 % SATELLITE MODEL
 %{
 obj = satelliteModel(time, dt, powerSystem, attitudeSystem, commandSystem)
 %}
 SATELLITEMODEL = satelliteModel(time, dt, POWERSYSTEM, ATTITUDESYSTEM, COMMANDSYSTEM);
-
+disp('Created: Satellite Model')
 
 
 end

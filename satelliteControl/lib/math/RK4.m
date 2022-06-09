@@ -3,7 +3,9 @@ function [X] = RK4(dynamics, obj, t, dt, X, varargin)
 %       Generic 4th Order Runge-Kutta Numerical Integrator
 %
 %   INPUTS:
+%       obj                 Handle for Object
 %       dynamics            Handle for System Dynamics
+%       t                   Time
 %       dt                  Time Step
 %       X                   State Vector (step n)
 %       varargin            Other Input Arguments
@@ -12,6 +14,7 @@ function [X] = RK4(dynamics, obj, t, dt, X, varargin)
 %       X                   State Vector (step n+1)
 %
 %   Created by Manav Jadeja on 20220102
+%   Based heavily on a function made by Chris Gnam
 
 
 %%% COMPUTATION OF UPDATED STATE VECTOR
