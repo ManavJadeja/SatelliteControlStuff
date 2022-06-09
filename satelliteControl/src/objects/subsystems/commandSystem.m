@@ -120,7 +120,6 @@ classdef commandSystem < handle
             
             % Find All Free Intervals
             expBools = false(1,length(sunBools));
-            size(expBools)
             matchPattern = [1, zeros(1,intervalNeeded)];
             check = true;
             while check

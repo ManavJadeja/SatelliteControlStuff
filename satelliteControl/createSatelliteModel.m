@@ -46,6 +46,7 @@ qd(:,:,4) = sunQuaternions;     % 4: Charging Mode
 for a = 1:length(facilityArray)
     qd(:,:,a+4) = accessQuaternions(:,:,a);
 end
+
 %%% CREATING OBJECTS
 % POWER SYSTEM
 %{
@@ -68,7 +69,7 @@ disp('Created: Power System')
 obj = ssd(capacity, nothingDataGen, safetyDataGen, experimentDataGen, chargingDataGen, communicationDataGen, state0)
 obj = commandSystem(socSafe, socUnsafe, ssdSafe, expDuration, dt, sunBools, accessBools, ssd)
 %}
-SSD = ssd(100, 0.0002, 0.0002, 0.0002+0.003+0.177, 0.0002, -0.5, 0);
+SSD = ssd(1000, 0.0002, 0.0002, 0.0002+0.003+0.177, 0.0002, -0.5, 30);
 COMMANDSYSTEM = commandSystem(0.75, 0.5, 0.90, 600, dt, sunBools, accessBools, SSD);
 disp('Created: Command System')
 
