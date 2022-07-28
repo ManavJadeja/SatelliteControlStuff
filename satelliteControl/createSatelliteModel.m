@@ -55,11 +55,18 @@ obj = solarArray(area, normalVector, efficiency)
 obj = electricalSystem(nothingLoadCurrent, safetyLoadCurrent, experimentLoadCurrent,...
         chargingLoadCurrent, communicationLoadCurrent)
 obj = powerSystem(time, battery, batteryData, solarArray, electricalSystem)
+
+%%% NOTES:
+    Battery Capacity: [W hr]
+    Battery SOC: [%] (from 0 to 1)
+    Solar Array Area: [m2]
+    Solar Array Efficiency: [%] (from 0 to 1)
+    (all)LoadCurrents: [A]
 %}
 batteryFileName = "Moli M.battery";         % Either "Moli M.battery" or "Sony HC.battery" currently
 BATTERY = battery(20, 0.9, 0.01, 0.01, 33.6, 40, 8, 0);
 BATTERYDATA = jsondecode(fileread(batteryFileName));
-SOLARARRAY = solarArray(0.08, [1,0,0], 1);
+SOLARARRAY = solarArray(0.09, [1,0,0], 1);
 ELECTRICALSYSTEM = electricalSystem(0.5, 0.3, 5, 0.3, 5);
 POWERSYSTEM = powerSystem(time, BATTERY, BATTERYDATA, SOLARARRAY, ELECTRICALSYSTEM);
 disp('Created: Power System')
@@ -68,8 +75,14 @@ disp('Created: Power System')
 %{
 obj = ssd(capacity, nothingDataGen, safetyDataGen, experimentDataGen, chargingDataGen, communicationDataGen, state0)
 obj = commandSystem(socSafe, socUnsafe, ssdSafe, expDuration, dt, sunBools, accessBools, ssd)
+
+%%% NOTES:
+    (all)DataGen: [MB/s] (positive is data generation, negative is sending)
+    SSD Capacity: [MB]
+    SSD state0: [MB]
+    Experiment Duration: [s] (expDuration)
 %}
-SSD = ssd(1000, 0.0002, 0.0002, 0.0002+0.003+0.177, 0.0002, -0.5, 30);
+SSD = ssd(1000, 0.0002, 0.0002, 0.0002+0.003+0.177, 0.0002, -0.125, 30);
 COMMANDSYSTEM = commandSystem(0.75, 0.5, 0.90, 600, dt, sunBools, accessBools, SSD);
 disp('Created: Command System')
 
